@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TNB Labor Rate Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --dark: #111214;
+    --panel: #1a1c20;
+    --border: #2a2d33;
+    --accent: #e8b84b;
+    --accent-dim: rgba(232,184,75,0.12);
+    --accent-glow: rgba(232,184,75,0.25);
+    --text: #e8e8e8;
+    --muted: #6b7280;
+    --green: #4ade80;
+    --rate: 65;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--dark);
+    border-bottom: 2px solid var(--accent);
+    padding: 18px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-mark {
+    width: 42px;
+    height: 42px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: var(--black);
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  .header-text h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .header-text p {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* RATE BAR */
+  .rate-bar {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .rate-bar label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .rate-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 4px;
+  }
+
+  .rate-input-wrap span {
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+  }
+
+  .rate-input-wrap input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    width: 50px;
+  }
+
+  .rate-badge {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* SEARCH */
+  .search-wrap {
+    padding: 16px 20px 8px;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    transition: border-color 0.2s;
+  }
+
+  .search-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .search-icon {
+    color: var(--muted);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .search-box input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    width: 100%;
+  }
+
+  .search-box input::placeholder { color: var(--muted); }
+
+  .clear-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 0;
+    line-height: 1;
+    display: none;
+  }
+
+  /* CATEGORIES */
+  .category-filters {
+    padding: 10px 20px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .category-filters::-webkit-scrollbar { display: none; }
+
+  .cat-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+  }
+
+  .cat-btn.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* RESULTS COUNT */
+  .results-info {
+    padding: 4px 20px 10px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* TASK LIST */
+  .task-list {
+    padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .task-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .task-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--border);
+    transition: background 0.15s;
+  }
+
+  .task-card:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .task-card:hover::before {
+    background: var(--accent);
+  }
+
+  .task-card.expanded {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .task-card.expanded::before {
+    background: var(--accent);
+  }
+
+  .task-info { flex: 1; min-width: 0; }
+
+  .task-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .task-cat {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .task-hours {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .task-hours span {
+    display: block;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .task-cost {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--accent);
+    text-align: right;
+    white-space: nowrap;
+    letter-spacing: 1px;
+    min-width: 70px;
+  }
+
+  /* EXPANDED DETAIL */
+  .task-detail {
+    display: none;
+    padding: 10px 16px 14px;
+    border-top: 1px solid var(--border);
+    margin-top: 10px;
+    gap: 16px;
+  }
+
+  .task-card.expanded .task-detail {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .detail-stat {
+    flex: 1;
+    min-width: 100px;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+
+  .detail-stat .ds-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+
+  .detail-stat .ds-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    color: var(--accent);
+    margin-top: 4px;
+  }
+
+  .detail-stat .ds-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .empty-state .es-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* ADD TASK MODAL */
+  .fab {
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    border-radius: 50%;
+    font-size: 26px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px var(--accent-glow);
+    transition: transform 0.15s, box-shadow 0.15s;
+    z-index: 200;
+    font-weight: bold;
+    line-height: 1;
+  }
+
+  .fab:hover {
+    transform: scale(1.08);
+    box-shadow: 0 6px 28px var(--accent-glow);
+  }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 300;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    max-width: 560px;
+    padding: 24px 20px 40px;
+    animation: slideUp 0.25s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .modal-close {
+    float: right;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 22px;
+    cursor: pointer;
+    margin-top: -4px;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: var(--accent);
+  }
+
+  .form-group select option { background: var(--panel); }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn-cancel {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn-save {
+    flex: 2;
+    background: var(--accent);
+    border: none;
+    color: var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .btn-save:hover { opacity: 0.9; }
+
+  /* DELETE btn inside expanded */
+  .btn-delete {
+    background: none;
+    border: 1px solid #3f2020;
+    color: #ef4444;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    margin-top: 10px;
+    width: 100%;
+    transition: background 0.15s;
+  }
+
+  .btn-delete:hover { background: rgba(239,68,68,0.1); }
+
+  .highlight {
+    background: var(--accent);
+    color: var(--black);
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-mark">TNB</div>
+  <div class="header-text">
+    <h1>Labor Rate Card</h1>
+    <p>Tretter No Better · Golf Carts &nbsp;<span id="syncStatus" style="color:#4ade80;font-size:10px;">Connecting...</span></p>
+  </div>
+</header>
+
+<div class="rate-bar">
+  <label>Hourly Rate</label>
+  <div class="rate-input-wrap">
+    <span>$</span>
+    <input type="number" id="rateInput" value="65" min="1" max="999">
+    <span>/ hr</span>
+  </div>
+  <div class="rate-badge" id="rateBadge">All prices at $65/hr</div>
+</div>
+
+<div class="search-wrap">
+  <div class="search-box">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search tasks…" autocomplete="off">
+    <button class="clear-btn" id="clearBtn">×</button>
+  </div>
+</div>
+
+<div class="category-filters" id="categoryFilters"></div>
+<div class="results-info" id="resultsInfo"></div>
+
+<div class="task-list" id="taskList"></div>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" title="Add task">+</button>
+
+<!-- ADD MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">×</button>
+    <h2>Add Task</h2>
+    <div class="form-group">
+      <label>Task Name</label>
+      <input type="text" id="taskNameInput" placeholder="e.g. Rear Seat Kit Install">
+    </div>
+    <div class="form-group">
+      <label>Category</label>
+      <select id="taskCatInput">
+        <option value="Electrical">Electrical</option>
+        <option value="Body & Accessories">Body & Accessories</option>
+        <option value="Drivetrain">Drivetrain</option>
+        <option value="Batteries">Batteries</option>
+        <option value="Brakes & Steering">Brakes & Steering</option>
+        <option value="Maintenance">Maintenance</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Labor Hours</label>
+      <input type="number" id="taskHoursInput" placeholder="e.g. 2.5" min="0.25" step="0.25">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="modalCancel">Cancel</button>
+      <button class="btn-save" id="modalSave">Save Task</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// ── FIREBASE SETUP ────────────────────────────────────────────────
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA63bdlg0GaEQYQPSpDqhp9XEga-wkqiFY",
+  authDomain: "tnb-golf-carts.firebaseapp.com",
+  projectId: "tnb-golf-carts",
+  storageBucket: "tnb-golf-carts.firebasestorage.app",
+  messagingSenderId: "447050777531",
+  appId: "1:447050777531:web:e96f83be1f8160abf33a9e",
+  measurementId: "G-PRWRWM8QVZ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const tasksCol = collection(db, "tasks");
+
+// ── DEFAULT TASK LIBRARY ──────────────────────────────────────────
+const DEFAULT_TASKS = [
+  // Batteries
+  { id: 1, name: "Battery Pack Replacement (6V x6)", category: "Batteries", hours: 2.0 },
+  { id: 2, name: "Battery Pack Replacement (8V x6)", category: "Batteries", hours: 2.0 },
+  { id: 3, name: "Battery Cable Replacement", category: "Batteries", hours: 1.0 },
+  { id: 4, name: "Battery Charger Port Replacement", category: "Batteries", hours: 0.5 },
+  { id: 5, name: "Lithium Battery Conversion", category: "Batteries", hours: 4.0 },
+  // Electrical
+  { id: 6, name: "Solenoid Replacement", category: "Electrical", hours: 1.0 },
+  { id: 7, name: "Controller Replacement", category: "Electrical", hours: 2.0 },
+  { id: 8, name: "Forward/Reverse Switch Replacement", category: "Electrical", hours: 1.0 },
+  { id: 9, name: "Key Switch Replacement", category: "Electrical", hours: 0.5 },
+  { id: 10, name: "Light Kit Install (Full)", category: "Electrical", hours: 3.0 },
+  { id: 11, name: "Horn Install", category: "Electrical", hours: 0.5 },
+  { id: 12, name: "Speed Sensor Replacement", category: "Electrical", hours: 1.5 },
+  // Body & Accessories
+  { id: 13, name: "Rear Seat Kit Install", category: "Body & Accessories", hours: 3.0 },
+  { id: 14, name: "Windshield Install", category: "Body & Accessories", hours: 1.0 },
+  { id: 15, name: "Roof/Canopy Replacement", category: "Body & Accessories", hours: 1.5 },
+  { id: 16, name: "Body Panel Replacement (per panel)", category: "Body & Accessories", hours: 0.75 },
+  { id: 17, name: "Lift Kit Install", category: "Body & Accessories", hours: 4.0 },
+  { id: 18, name: "Custom Wheel & Tire Swap (set of 4)", category: "Body & Accessories", hours: 2.0 },
+  { id: 19, name: "Side Mirror Install", category: "Body & Accessories", hours: 0.5 },
+  { id: 20, name: "Enclosure Install", category: "Body & Accessories", hours: 2.5 },
+  // Drivetrain
+  { id: 21, name: "Motor Replacement", category: "Drivetrain", hours: 3.0 },
+  { id: 22, name: "Motor Brush Replacement", category: "Drivetrain", hours: 1.5 },
+  { id: 23, name: "Belt Replacement", category: "Drivetrain", hours: 1.0 },
+  { id: 24, name: "Differential Service", category: "Drivetrain", hours: 2.0 },
+  // Brakes & Steering
+  { id: 25, name: "Brake Shoe Replacement (rear)", category: "Brakes & Steering", hours: 2.0 },
+  { id: 26, name: "Brake Cable Adjustment", category: "Brakes & Steering", hours: 0.5 },
+  { id: 27, name: "Steering Wheel Replacement", category: "Brakes & Steering", hours: 0.75 },
+  { id: 28, name: "Tie Rod End Replacement", category: "Brakes & Steering", hours: 1.5 },
+  // Maintenance
+  { id: 29, name: "Full Inspection & Report", category: "Maintenance", hours: 1.5 },
+  { id: 30, name: "Lube & Maintenance Service", category: "Maintenance", hours: 1.0 },
+  { id: 31, name: "Wash & Detail", category: "Maintenance", hours: 1.5 },
+];
+
+// ── STATE ──────────────────────────────────────────────────────────
+let tasks = [];
+let rate = 65;
+let searchTerm = '';
+let activeCategory = 'All';
+let expandedId = null;
+let nextId = 100;
+
+// ── FIRESTORE SYNC ────────────────────────────────────────────────
+async function seedDefaultTasks() {
+  for (const t of DEFAULT_TASKS) {
+    await setDoc(doc(db, "tasks", String(t.id)), t);
+  }
+}
+
+async function saveTask(t) {
+  await setDoc(doc(db, "tasks", String(t.id)), t);
+}
+
+async function removeTask(id) {
+  await deleteDoc(doc(db, "tasks", String(id)));
+}
+
+function startSync() {
+  document.getElementById('syncStatus').textContent = '⟳ Syncing...';
+  onSnapshot(tasksCol, async (snapshot) => {
+    if (snapshot.empty) {
+      await seedDefaultTasks();
+      return;
+    }
+    tasks = snapshot.docs.map(d => d.data());
+    nextId = Math.max(...tasks.map(t => t.id), 99) + 1;
+    document.getElementById('syncStatus').textContent = '✓ Synced';
+    render();
+  }, (err) => {
+    document.getElementById('syncStatus').textContent = '⚠ Offline';
+  });
+}
+
+function loadTasks() { /* handled by Firestore */ }
+function saveTasks() { /* handled by Firestore */ }
+
+// ── RENDER ─────────────────────────────────────────────────────────
+function getCategories() {
+  const cats = [...new Set(tasks.map(t => t.category))].sort();
+  return ['All', ...cats];
+}
+
+function getFiltered() {
+  return tasks.filter(t => {
+    const matchCat = activeCategory === 'All' || t.category === activeCategory;
+    const matchSearch = !searchTerm || t.name.toLowerCase().includes(searchTerm.toLowerCase()) || t.category.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchCat && matchSearch;
+  }).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function highlight(text, term) {
+  if (!term) return text;
+  const idx = text.toLowerCase().indexOf(term.toLowerCase());
+  if (idx === -1) return text;
+  return text.slice(0, idx) + `<span class="highlight">${text.slice(idx, idx + term.length)}</span>` + text.slice(idx + term.length);
+}
+
+function formatCost(hours) {
+  return '$' + (hours * rate).toFixed(0);
+}
+
+function renderCategories() {
+  const cats = getCategories();
+  const el = document.getElementById('categoryFilters');
+  el.innerHTML = cats.map(c => `
+    <button class="cat-btn ${c === activeCategory ? 'active' : ''}" onclick="setCategory('${c}')">${c}</button>
+  `).join('');
+}
+
+function renderTasks() {
+  const filtered = getFiltered();
+  const info = document.getElementById('resultsInfo');
+  info.textContent = `${filtered.length} task${filtered.length !== 1 ? 's' : ''}${activeCategory !== 'All' ? ' in ' + activeCategory : ''}`;
+
+  const el = document.getElementById('taskList');
+  if (filtered.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="es-icon">🔧</div><p>No tasks found.<br>Tap + to add one.</p></div>`;
+    return;
+  }
+
+  el.innerHTML = filtered.map(t => {
+    const isExpanded = expandedId === t.id;
+    const cost = (t.hours * rate).toFixed(2);
+    const hoursLabel = t.hours === 1 ? '1.0 hr' : `${t.hours} hrs`;
+    return `
+      <div class="task-card ${isExpanded ? 'expanded' : ''}" onclick="toggleExpand(${t.id})">
+        <div class="task-info">
+          <div class="task-name">${highlight(t.name, searchTerm)}</div>
+          <div class="task-cat">${t.category}</div>
+        </div>
+        <div class="task-hours"><span>${t.hours}</span>hrs</div>
+        <div class="task-cost">${formatCost(t.hours)}</div>
+        <div class="task-detail">
+          <div class="detail-stat">
+            <div class="ds-label">Labor Hours</div>
+            <div class="ds-value">${t.hours}</div>
+            <div class="ds-sub">hours estimated</div>
+          </div>
+          <div class="detail-stat">
+            <div class="ds-label">Labor Cost</div>
+            <div class="ds-value">$${cost}</div>
+            <div class="ds-sub">at $${rate}/hr</div>
+          </div>
+          <div class="detail-stat">
+            <div class="ds-label">Category</div>
+            <div class="ds-value" style="font-size:14px;margin-top:6px">${t.category}</div>
+            <div class="ds-sub">&nbsp;</div>
+          </div>
+          <button class="btn-delete" onclick="deleteTask(event, ${t.id})">🗑 Remove Task</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function render() {
+  renderCategories();
+  renderTasks();
+  document.getElementById('rateBadge').textContent = `All prices at $${rate}/hr`;
+}
+
+// ── INTERACTIONS ───────────────────────────────────────────────────
+function setCategory(cat) {
+  activeCategory = cat;
+  expandedId = null;
+  render();
+}
+
+function toggleExpand(id) {
+  expandedId = expandedId === id ? null : id;
+  renderTasks();
+}
+
+async function deleteTask(e, id) {
+  e.stopPropagation();
+  if (!confirm('Remove this task from the rate card?')) return;
+  await removeTask(id);
+  expandedId = null;
+}
+
+// Search
+const searchInput = document.getElementById('searchInput');
+const clearBtn = document.getElementById('clearBtn');
+
+searchInput.addEventListener('input', () => {
+  searchTerm = searchInput.value;
+  clearBtn.style.display = searchTerm ? 'block' : 'none';
+  activeCategory = 'All';
+  expandedId = null;
+  render();
+});
+
+clearBtn.addEventListener('click', () => {
+  searchInput.value = '';
+  searchTerm = '';
+  clearBtn.style.display = 'none';
+  render();
+});
+
+// Rate
+document.getElementById('rateInput').addEventListener('input', (e) => {
+  const val = parseFloat(e.target.value);
+  if (val > 0) { rate = val; render(); }
+});
+
+// Modal
+const overlay = document.getElementById('modalOverlay');
+document.getElementById('fabBtn').addEventListener('click', () => overlay.classList.add('open'));
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalCancel').addEventListener('click', closeModal);
+overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+
+function closeModal() {
+  overlay.classList.remove('open');
+  document.getElementById('taskNameInput').value = '';
+  document.getElementById('taskHoursInput').value = '';
+}
+
+document.getElementById('modalSave').addEventListener('click', async () => {
+  const name = document.getElementById('taskNameInput').value.trim();
+  const cat = document.getElementById('taskCatInput').value;
+  const hours = parseFloat(document.getElementById('taskHoursInput').value);
+  if (!name) { alert('Task name is required.'); return; }
+  if (!hours || hours <= 0) { alert('Enter valid labor hours.'); return; }
+  const newTask = { id: nextId++, name, category: cat, hours };
+  await saveTask(newTask);
+  closeModal();
+});
+
+// ── INIT ───────────────────────────────────────────────────────────
+startSync();
+render();
+</script>
+</body>
+</html>
