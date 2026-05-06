@@ -29,7 +29,38 @@
     overflow-x: hidden;
   }
 
-  /* GRID BACKGROUND */
+  /* NAV BAR */
+  .nav-bar {
+    position: relative;
+    z-index: 2;
+    background: var(--dark);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 20px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-bar::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
   body::before {
     content: '';
     position: fixed;
@@ -368,6 +399,11 @@
 </style>
 </head>
 <body>
+<nav class="nav-bar">
+  <a class="nav-btn active" href="./index.html">🏠 Hub</a>
+  <a class="nav-btn" href="./tnb-labor-rate-card.html">🔧 Labor Rate Card</a>
+  <a class="nav-btn" href="./golf-cart-tracker.html">🛻 Cart Tracker</a>
+</nav>
 <div class="wrap">
 
   <header>
