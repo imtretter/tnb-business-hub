@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TNB Golf Carts — Business Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080809;
+    --dark: #0f1012;
+    --panel: #16181c;
+    --border: #252830;
+    --accent: #e8b84b;
+    --accent-dim: rgba(232,184,75,0.1);
+    --accent-glow: rgba(232,184,75,0.2);
+    --text: #e4e4e6;
+    --muted: #5a6075;
+    --green: #4ade80;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(232,184,75,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,184,75,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NOISE OVERLAY */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* HEADER */
+  header {
+    padding: 48px 0 0;
+    text-align: center;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .logo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .logo-square {
+    width: 52px;
+    height: 52px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--black);
+    letter-spacing: 1px;
+    position: relative;
+  }
+
+  .logo-square::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border: 1px solid var(--accent);
+    opacity: 0.3;
+  }
+
+  .logo-text {
+    text-align: left;
+  }
+
+  .logo-text h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .logo-text p {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .tagline {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(42px, 10vw, 72px);
+    letter-spacing: 4px;
+    line-height: 0.95;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .headline span {
+    color: var(--accent);
+  }
+
+  .subhead {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 380px;
+    margin: 0 auto 48px;
+    line-height: 1.7;
+  }
+
+  /* DIVIDER */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .divider-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* TOOL CARDS */
+  .tools {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+
+  .tool-card {
+    display: block;
+    text-decoration: none;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .tool-card:nth-child(1) { animation-delay: 0.25s; }
+  .tool-card:nth-child(2) { animation-delay: 0.35s; }
+  .tool-card:nth-child(3) { animation-delay: 0.45s; }
+
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .tool-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px var(--accent-dim);
+  }
+
+  .tool-card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .tool-card.coming-soon {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .card-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(232,184,75,0.2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .card-meta { flex: 1; }
+
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .card-category {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .card-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .badge-live {
+    background: rgba(74,222,128,0.1);
+    border: 1px solid rgba(74,222,128,0.3);
+    color: var(--green);
+  }
+
+  .badge-soon {
+    background: rgba(90,96,117,0.2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .card-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .feature-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    background: var(--black);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+  }
+
+  .card-arrow {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    font-size: 18px;
+    color: var(--accent);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .tool-card:hover .card-arrow { opacity: 1; transform: translateX(0); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 0 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    animation: fadeUp 0.6s 0.5s ease both;
+  }
+
+  .footer-left {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .footer-left strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .footer-right {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* MOBILE */
+  @media (max-width: 480px) {
+    header { padding: 32px 0 0; }
+    .card-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="logo-badge">
+      <div class="logo-square">TNB</div>
+      <div class="logo-text">
+        <h1>Tretter No Better</h1>
+        <p>Veteran Owned · Family Operated</p>
+      </div>
+    </div>
+    <div class="tagline">Business Operations Hub</div>
+    <div class="headline">YOUR TOOLS.<br><span>ONE PLACE.</span></div>
+    <p class="subhead">Everything you need to run TNB Golf Carts — quotes, inventory, and more. Built for the field, not the office.</p>
+  </header>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-label">Active Tools</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="tools">
+
+    <a class="tool-card" href="./tnb-labor-rate-card.html">
+      <div class="card-header">
+        <div class="card-icon">🔧</div>
+        <div class="card-meta">
+          <div class="card-title">Labor Rate Card</div>
+          <div class="card-category">Quoting & Pricing</div>
+        </div>
+        <div class="card-badge badge-live">● Live</div>
+      </div>
+      <p class="card-desc">Search any job or repair task to instantly see estimated labor hours and cost at your set hourly rate. Built to make quoting fast and consistent.</p>
+      <div class="card-features">
+        <span class="feature-tag">31 tasks</span>
+        <span class="feature-tag">Firebase sync</span>
+        <span class="feature-tag">Mobile ready</span>
+        <span class="feature-tag">Custom rate</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <div class="tool-card coming-soon">
+      <div class="card-header">
+        <div class="card-icon">🛻</div>
+        <div class="card-meta">
+          <div class="card-title">Golf Cart Tracker</div>
+          <div class="card-category">Fleet & Inventory</div>
+        </div>
+        <div class="card-badge badge-soon">Coming Soon</div>
+      </div>
+      <p class="card-desc">Track every cart in your fleet — status, repairs, parts, investment, and estimated value. Full inventory management built for TNB operations.</p>
+      <div class="card-features">
+        <span class="feature-tag">Fleet tracking</span>
+        <span class="feature-tag">Parts log</span>
+        <span class="feature-tag">Cost analysis</span>
+        <span class="feature-tag">Firebase sync</span>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-left">
+      <strong>TNB Golf Carts</strong> · Vacaville, CA
+    </div>
+    <div class="footer-right">Veteran Owned · Est. 2025</div>
+  </footer>
+
+</div>
+</body>
+</html>
