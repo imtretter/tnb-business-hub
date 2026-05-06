@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TNB Golf Cart Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --dark: #111214;
+    --panel: #1a1c20;
+    --border: #2a2d33;
+    --accent: #e8b84b;
+    --accent-dim: rgba(232,184,75,0.12);
+    --accent-glow: rgba(232,184,75,0.25);
+    --text: #e8e8e8;
+    --muted: #6b7280;
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.1);
+    --red: #ef4444;
+    --red-dim: rgba(239,68,68,0.1);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96,165,250,0.1);
+    --orange: #fb923c;
+    --orange-dim: rgba(251,146,60,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 100px;
+  }
+
+  /* NAV BAR */
+  .nav-bar {
+    background: var(--black);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 20px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-bar::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+  /* HEADER */
+  header {
+    background: var(--dark);
+    border-bottom: 2px solid var(--accent);
+    padding: 18px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-mark {
+    width: 42px;
+    height: 42px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: var(--black);
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  .header-text h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .header-text p {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* SUMMARY STRIP */
+  .summary-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .summary-stat {
+    background: var(--dark);
+    padding: 12px 16px;
+    text-align: center;
+  }
+
+  .summary-stat .ss-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  .summary-stat .ss-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 3px;
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    padding: 12px 16px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .filter-bar::-webkit-scrollbar { display: none; }
+
+  .filter-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .filter-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+  /* CART LIST */
+  .cart-list {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cart-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+    cursor: pointer;
+  }
+
+  .cart-card:hover { border-color: var(--accent); }
+  .cart-card.expanded { border-color: var(--accent); }
+
+  .cart-card-top {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .cart-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .cart-main { flex: 1; min-width: 0; }
+
+  .cart-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .cart-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .cart-status-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .cart-financials {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .cart-fin-item { text-align: right; }
+  .cart-fin-item .cf-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .cart-fin-item .cf-label {
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* EXPANDED DETAIL */
+  .cart-detail {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 16px;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .cart-card.expanded .cart-detail { display: flex; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .detail-box {
+    background: var(--black);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+
+  .detail-box .db-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .detail-box .db-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    color: var(--text);
+  }
+
+  .detail-box.full { grid-column: 1 / -1; }
+
+  .profit-bar-wrap {
+    background: var(--black);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+
+  .profit-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .profit-bar-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .profit-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  /* PARTS LOG */
+  .parts-section { }
+
+  .parts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .parts-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+
+  .btn-add-part {
+    background: var(--accent-dim);
+    border: 1px solid rgba(232,184,75,0.3);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-add-part:hover { background: var(--accent); color: var(--black); }
+
+  .parts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .part-item {
+    background: var(--black);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .part-item-name { flex: 1; font-size: 13px; }
+  .part-item-cost {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+  }
+  .part-item-type {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+  }
+  .part-del {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+  .part-del:hover { color: var(--red); }
+
+  .no-parts {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    padding: 8px 0;
+  }
+
+  /* CARD ACTIONS */
+  .cart-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .btn-status {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .btn-status:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-delete-cart {
+    background: none;
+    border: 1px solid #3f2020;
+    color: var(--red);
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    transition: background 0.15s;
+  }
+  .btn-delete-cart:hover { background: var(--red-dim); }
+
+  /* NOTES */
+  .notes-area {
+    background: var(--black);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .notes-area .db-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .notes-area textarea {
+    width: 100%;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    resize: none;
+    line-height: 1.6;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-state .es-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* STATUS COLORS */
+  .status-available { background: var(--green); }
+  .status-repair { background: var(--orange); }
+  .status-rented { background: var(--blue); }
+  .status-sold { background: var(--muted); }
+
+  .badge-available { background: var(--green-dim); border: 1px solid rgba(74,222,128,0.3); color: var(--green); }
+  .badge-repair { background: var(--orange-dim); border: 1px solid rgba(251,146,60,0.3); color: var(--orange); }
+  .badge-rented { background: var(--blue-dim); border: 1px solid rgba(96,165,250,0.3); color: var(--blue); }
+  .badge-sold { background: rgba(107,114,128,0.15); border: 1px solid var(--border); color: var(--muted); }
+
+  /* FAB */
+  .fab {
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    border-radius: 50%;
+    font-size: 26px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px var(--accent-glow);
+    transition: transform 0.15s, box-shadow 0.15s;
+    z-index: 200;
+    font-weight: bold;
+  }
+  .fab:hover { transform: scale(1.08); box-shadow: 0 6px 28px var(--accent-glow); }
+
+  /* MODALS */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 300;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 16px 16px 0 0;
+    width: 100%;
+    max-width: 560px;
+    padding: 24px 20px 40px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.25s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .modal-close {
+    float: right;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 22px;
+    cursor: pointer;
+    margin-top: -4px;
+  }
+
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { resize: none; height: 80px; }
+  .form-group select option { background: var(--panel); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-cancel {
+    flex: 1;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .btn-save {
+    flex: 2;
+    background: var(--accent);
+    border: none;
+    color: var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .btn-save:hover { opacity: 0.9; }
+
+  .sync-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    display: inline-block;
+    margin-right: 4px;
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a class="nav-btn" href="./index.html">🏠 Hub</a>
+  <a class="nav-btn" href="./tnb-labor-rate-card.html">🔧 Labor Rate Card</a>
+  <a class="nav-btn active" href="./golf-cart-tracker.html">🛻 Cart Tracker</a>
+</nav>
+
+<header>
+  <div class="logo-mark">TNB</div>
+  <div class="header-text">
+    <h1>Cart Tracker</h1>
+    <p>Fleet & Inventory &nbsp;<span id="syncStatus" style="color:#4ade80;font-size:10px;">Connecting...</span></p>
+  </div>
+</header>
+
+<div class="summary-strip">
+  <div class="summary-stat">
+    <div class="ss-val" id="sumTotal">0</div>
+    <div class="ss-label">Total Carts</div>
+  </div>
+  <div class="summary-stat">
+    <div class="ss-val" id="sumInvested">$0</div>
+    <div class="ss-label">Total In</div>
+  </div>
+  <div class="summary-stat">
+    <div class="ss-val" id="sumValue">$0</div>
+    <div class="ss-label">Est. Value</div>
+  </div>
+  <div class="summary-stat">
+    <div class="ss-val" id="sumProfit" style="color:var(--green)">$0</div>
+    <div class="ss-label">Potential</div>
+  </div>
+</div>
+
+<div class="filter-bar" id="filterBar">
+  <button class="filter-btn active" onclick="setFilter('All')">All</button>
+  <button class="filter-btn" onclick="setFilter('available')">Available</button>
+  <button class="filter-btn" onclick="setFilter('repair')">In Repair</button>
+  <button class="filter-btn" onclick="setFilter('rented')">Rented</button>
+  <button class="filter-btn" onclick="setFilter('sold')">Sold</button>
+</div>
+
+<div class="cart-list" id="cartList"></div>
+
+<button class="fab" id="fabBtn">+</button>
+
+<!-- ADD CART MODAL -->
+<div class="modal-overlay" id="cartModal">
+  <div class="modal">
+    <button class="modal-close" id="cartModalClose">×</button>
+    <h2>Add Cart</h2>
+    <div class="form-group">
+      <label>Cart Name / ID</label>
+      <input type="text" id="inName" placeholder="e.g. Cart #1 or Blue Yamaha">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Make</label>
+        <input type="text" id="inMake" placeholder="e.g. EZGO">
+      </div>
+      <div class="form-group">
+        <label>Model</label>
+        <input type="text" id="inModel" placeholder="e.g. RXV">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Year</label>
+        <input type="number" id="inYear" placeholder="e.g. 2018" min="1990" max="2030">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="inStatus">
+          <option value="available">Available</option>
+          <option value="repair">In Repair</option>
+          <option value="rented">Rented</option>
+          <option value="sold">Sold</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Purchase Price ($)</label>
+        <input type="number" id="inPurchase" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div class="form-group">
+        <label>Est. Value ($)</label>
+        <input type="number" id="inValue" placeholder="0.00" min="0" step="0.01">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Notes</label>
+      <textarea id="inNotes" placeholder="Condition, features, anything relevant..."></textarea>
+    </div>
+
+    <!-- PARTS & LABOR SECTION -->
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;">Parts & Labor Installed</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <select id="inPartSelect" style="flex:2;background:var(--panel);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:8px 10px;outline:none;">
+          <option value="">— Select job / part —</option>
+          <option value="Battery Pack Replacement (6V x6)">Battery Pack Replacement (6V x6)</option>
+          <option value="Battery Pack Replacement (8V x6)">Battery Pack Replacement (8V x6)</option>
+          <option value="Battery Cable Replacement">Battery Cable Replacement</option>
+          <option value="Battery Charger Port Replacement">Battery Charger Port Replacement</option>
+          <option value="Lithium Battery Conversion">Lithium Battery Conversion</option>
+          <option value="Solenoid Replacement">Solenoid Replacement</option>
+          <option value="Controller Replacement">Controller Replacement</option>
+          <option value="Forward/Reverse Switch Replacement">Forward/Reverse Switch Replacement</option>
+          <option value="Key Switch Replacement">Key Switch Replacement</option>
+          <option value="Light Kit Install (Full)">Light Kit Install (Full)</option>
+          <option value="Horn Install">Horn Install</option>
+          <option value="Speed Sensor Replacement">Speed Sensor Replacement</option>
+          <option value="Rear Seat Kit Install">Rear Seat Kit Install</option>
+          <option value="Windshield Install">Windshield Install</option>
+          <option value="Roof/Canopy Replacement">Roof/Canopy Replacement</option>
+          <option value="Body Panel Replacement">Body Panel Replacement</option>
+          <option value="Lift Kit Install">Lift Kit Install</option>
+          <option value="Custom Wheel & Tire Swap (set of 4)">Custom Wheel & Tire Swap (set of 4)</option>
+          <option value="Side Mirror Install">Side Mirror Install</option>
+          <option value="Enclosure Install">Enclosure Install</option>
+          <option value="Motor Replacement">Motor Replacement</option>
+          <option value="Motor Brush Replacement">Motor Brush Replacement</option>
+          <option value="Belt Replacement">Belt Replacement</option>
+          <option value="Differential Service">Differential Service</option>
+          <option value="Brake Shoe Replacement (rear)">Brake Shoe Replacement (rear)</option>
+          <option value="Brake Cable Adjustment">Brake Cable Adjustment</option>
+          <option value="Steering Wheel Replacement">Steering Wheel Replacement</option>
+          <option value="Tie Rod End Replacement">Tie Rod End Replacement</option>
+          <option value="Full Inspection & Report">Full Inspection & Report</option>
+          <option value="Lube & Maintenance Service">Lube & Maintenance Service</option>
+          <option value="Wash & Detail">Wash & Detail</option>
+          <option value="custom">+ Custom item...</option>
+        </select>
+        <input type="number" id="inPartActualCost" placeholder="$" min="0" step="0.01" style="flex:1;background:var(--panel);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Mono',sans-serif;font-size:14px;padding:8px 10px;outline:none;min-width:0;">
+        <button id="inPartAddBtn" style="background:var(--accent);border:none;color:var(--black);font-size:20px;font-weight:bold;width:38px;height:38px;border-radius:6px;cursor:pointer;flex-shrink:0;">+</button>
+      </div>
+      <div id="inPartCustomWrap" style="display:none;margin-bottom:8px;">
+        <input type="text" id="inPartCustomName" placeholder="Describe the custom item..." style="width:100%;background:var(--panel);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:8px 10px;outline:none;">
+      </div>
+      <div id="inPartsList" style="display:flex;flex-direction:column;gap:6px;"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-family:'DM Mono',sans-serif;font-size:12px;color:var(--muted);">
+        <span>Parts & Labor Total</span>
+        <span id="inPartsTotal" style="color:var(--accent);">$0.00</span>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" id="cartModalCancel">Cancel</button>
+      <button class="btn-save" id="cartModalSave">Save Cart</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PART MODAL -->
+<div class="modal-overlay" id="partModal">
+  <div class="modal">
+    <button class="modal-close" id="partModalClose">×</button>
+    <h2 id="partModalTitle">Log Part / Labor</h2>
+    <div class="form-group">
+      <label>Description</label>
+      <input type="text" id="inPartName" placeholder="e.g. Battery Pack, Rear Seat Kit">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Type</label>
+        <select id="inPartType">
+          <option value="part">Part</option>
+          <option value="labor">Labor</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Cost ($)</label>
+        <input type="number" id="inPartCost" placeholder="0.00" min="0" step="0.01">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="partModalCancel">Cancel</button>
+      <button class="btn-save" id="partModalSave">Log It</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA63bdlg0GaEQYQPSpDqhp9XEga-wkqiFY",
+  authDomain: "tnb-golf-carts.firebaseapp.com",
+  projectId: "tnb-golf-carts",
+  storageBucket: "tnb-golf-carts.firebasestorage.app",
+  messagingSenderId: "447050777531",
+  appId: "1:447050777531:web:e96f83be1f8160abf33a9e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const cartsCol = collection(db, "carts");
+
+// ── STATE ─────────────────────────────────────────────
+let carts = [];
+let activeFilter = 'All';
+let expandedId = null;
+let activePartCartId = null;
+let nextId = 1;
+
+// ── FIRESTORE ─────────────────────────────────────────
+function startSync() {
+  document.getElementById('syncStatus').textContent = '⟳ Syncing...';
+  onSnapshot(cartsCol, (snap) => {
+    carts = snap.docs.map(d => d.data());
+    nextId = carts.length ? Math.max(...carts.map(c => c.id)) + 1 : 1;
+    document.getElementById('syncStatus').textContent = '✓ Synced';
+    render();
+  }, () => {
+    document.getElementById('syncStatus').textContent = '⚠ Offline';
+  });
+}
+
+async function saveCart(cart) {
+  await setDoc(doc(db, "carts", String(cart.id)), cart);
+}
+
+async function removeCart(id) {
+  await deleteDoc(doc(db, "carts", String(id)));
+}
+
+async function updateCart(id, data) {
+  await updateDoc(doc(db, "carts", String(id)), data);
+}
+
+// ── HELPERS ───────────────────────────────────────────
+function totalInvested(cart) {
+  const parts = (cart.parts || []).reduce((s, p) => s + (p.cost || 0), 0);
+  return (cart.purchasePrice || 0) + parts;
+}
+
+function fmt(n) {
+  if (n >= 1000) return '$' + (n/1000).toFixed(1) + 'k';
+  return '$' + Math.round(n);
+}
+
+function statusClass(s) {
+  const map = { available: 'available', repair: 'repair', rented: 'rented', sold: 'sold' };
+  return map[s] || 'available';
+}
+
+function statusLabel(s) {
+  const map = { available: 'Available', repair: 'In Repair', rented: 'Rented', sold: 'Sold' };
+  return map[s] || s;
+}
+
+// ── SUMMARY ───────────────────────────────────────────
+function renderSummary() {
+  const totalInv = carts.reduce((s, c) => s + totalInvested(c), 0);
+  const totalVal = carts.reduce((s, c) => s + (c.estValue || 0), 0);
+  const profit = totalVal - totalInv;
+  document.getElementById('sumTotal').textContent = carts.length;
+  document.getElementById('sumInvested').textContent = fmt(totalInv);
+  document.getElementById('sumValue').textContent = fmt(totalVal);
+  const profEl = document.getElementById('sumProfit');
+  profEl.textContent = (profit >= 0 ? '+' : '') + fmt(profit);
+  profEl.style.color = profit >= 0 ? 'var(--green)' : 'var(--red)';
+}
+
+// ── CART LIST ─────────────────────────────────────────
+function renderCarts() {
+  const filtered = activeFilter === 'All' ? carts : carts.filter(c => c.status === activeFilter);
+  const el = document.getElementById('cartList');
+
+  if (filtered.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="es-icon">🛻</div><p>${carts.length === 0 ? 'No carts yet.<br>Tap + to add your first cart.' : 'No carts with this status.'}</p></div>`;
+    return;
+  }
+
+  el.innerHTML = filtered.map(cart => {
+    const invested = totalInvested(cart);
+    const value = cart.estValue || 0;
+    const profit = value - invested;
+    const profitPct = invested > 0 ? Math.min((value / invested) * 100, 200) : 0;
+    const sc = statusClass(cart.status);
+    const isExpanded = expandedId === cart.id;
+    const parts = cart.parts || [];
+
+    return `
+    <div class="cart-card ${isExpanded ? 'expanded' : ''}" id="card-${cart.id}">
+      <div class="cart-card-top" onclick="toggleExpand(${cart.id})">
+        <div class="cart-status-dot status-${sc}"></div>
+        <div class="cart-main">
+          <div class="cart-name">${cart.name}</div>
+          <div class="cart-sub">${[cart.year, cart.make, cart.model].filter(Boolean).join(' · ')}</div>
+        </div>
+        <div class="cart-financials">
+          <div class="cart-fin-item">
+            <div class="cf-val" style="color:var(--muted)">${fmt(invested)}</div>
+            <div class="cf-label">In</div>
+          </div>
+          <div class="cart-fin-item">
+            <div class="cf-val" style="color:${profit >= 0 ? 'var(--green)' : 'var(--red)'}">${profit >= 0 ? '+' : ''}${fmt(profit)}</div>
+            <div class="cf-label">Margin</div>
+          </div>
+        </div>
+        <div class="cart-status-badge badge-${sc}">${statusLabel(cart.status)}</div>
+      </div>
+
+      <div class="cart-detail">
+        <div class="detail-grid">
+          <div class="detail-box">
+            <div class="db-label">Purchase Price</div>
+            <div class="db-val">$${(cart.purchasePrice || 0).toFixed(2)}</div>
+          </div>
+          <div class="detail-box">
+            <div class="db-label">Est. Value</div>
+            <div class="db-val">$${value.toFixed(2)}</div>
+          </div>
+          <div class="detail-box">
+            <div class="db-label">Parts & Labor</div>
+            <div class="db-val">$${(invested - (cart.purchasePrice||0)).toFixed(2)}</div>
+          </div>
+          <div class="detail-box">
+            <div class="db-label">Total Invested</div>
+            <div class="db-val">$${invested.toFixed(2)}</div>
+          </div>
+        </div>
+
+        <div class="profit-bar-wrap">
+          <div class="profit-bar-label">
+            <span>Invested: ${fmt(invested)}</span>
+            <span style="color:${profit>=0?'var(--green)':'var(--red)'}">Value: ${fmt(value)} (${profit>=0?'+':''}${fmt(profit)})</span>
+          </div>
+          <div class="profit-bar-track">
+            <div class="profit-bar-fill" style="width:${profitPct}%;background:${profit>=0?'var(--green)':'var(--red)'}"></div>
+          </div>
+        </div>
+
+        <div class="parts-section">
+          <div class="parts-header">
+            <div class="parts-title">Parts & Labor Log (${parts.length})</div>
+            <button class="btn-add-part" onclick="openPartModal(${cart.id})">+ Log</button>
+          </div>
+          <div class="parts-list">
+            ${parts.length === 0 ? '<div class="no-parts">No parts or labor logged yet.</div>' :
+              parts.map((p, i) => `
+                <div class="part-item">
+                  <div class="part-item-type">${p.type}</div>
+                  <div class="part-item-name">${p.name}</div>
+                  <div class="part-item-cost">$${(p.cost||0).toFixed(2)}</div>
+                  <button class="part-del" onclick="deletePart(${cart.id}, ${i})">×</button>
+                </div>
+              `).join('')}
+          </div>
+        </div>
+
+        <div class="notes-area">
+          <div class="db-label">Notes</div>
+          <textarea rows="2" placeholder="No notes..." onchange="saveNotes(${cart.id}, this.value)">${cart.notes || ''}</textarea>
+        </div>
+
+        <div class="cart-actions">
+          <button class="btn-status" onclick="cycleStatus(${cart.id})">⟳ Change Status</button>
+          <button class="btn-delete-cart" onclick="confirmDelete(${cart.id})">🗑 Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function render() {
+  renderSummary();
+  renderCarts();
+}
+
+// ── INTERACTIONS ──────────────────────────────────────
+window.toggleExpand = (id) => {
+  expandedId = expandedId === id ? null : id;
+  renderCarts();
+};
+
+window.setFilter = (f) => {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.toLowerCase().includes(f.toLowerCase()) || (f==='All' && b.textContent==='All'));
+  });
+  renderCarts();
+};
+
+window.cycleStatus = async (id) => {
+  const cart = carts.find(c => c.id === id);
+  if (!cart) return;
+  const order = ['available', 'repair', 'rented', 'sold'];
+  const next = order[(order.indexOf(cart.status) + 1) % order.length];
+  await updateCart(id, { status: next });
+};
+
+window.saveNotes = async (id, val) => {
+  await updateCart(id, { notes: val });
+};
+
+window.confirmDelete = async (id) => {
+  if (!confirm('Delete this cart? This cannot be undone.')) return;
+  await removeCart(id);
+  expandedId = null;
+};
+
+window.deletePart = async (cartId, partIdx) => {
+  const cart = carts.find(c => c.id === cartId);
+  if (!cart) return;
+  const parts = [...(cart.parts || [])];
+  parts.splice(partIdx, 1);
+  await updateCart(cartId, { parts });
+};
+
+window.openPartModal = (cartId) => {
+  activePartCartId = cartId;
+  const cart = carts.find(c => c.id === cartId);
+  document.getElementById('partModalTitle').textContent = `Log Part / Labor — ${cart?.name || ''}`;
+  document.getElementById('partModal').classList.add('open');
+};
+
+// Cart Modal parts-in-form logic
+let modalParts = [];
+
+function renderModalParts() {
+  const el = document.getElementById('inPartsList');
+  const total = modalParts.reduce((s, p) => s + p.cost, 0);
+  document.getElementById('inPartsTotal').textContent = '$' + total.toFixed(2);
+  if (modalParts.length === 0) { el.innerHTML = ''; return; }
+  el.innerHTML = modalParts.map((p, i) => `
+    <div style="background:var(--black);border:1px solid var(--border);border-radius:6px;padding:8px 12px;display:flex;align-items:center;gap:10px;">
+      <div style="flex:1;font-size:13px;">${p.name}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);">$${p.cost.toFixed(2)}</div>
+      <button onclick="removeModalPart(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;">×</button>
+    </div>
+  `).join('');
+}
+
+window.removeModalPart = (i) => {
+  modalParts.splice(i, 1);
+  renderModalParts();
+};
+
+document.getElementById('inPartSelect').addEventListener('change', function() {
+  document.getElementById('inPartCustomWrap').style.display = this.value === 'custom' ? 'block' : 'none';
+});
+
+document.getElementById('inPartAddBtn').addEventListener('click', () => {
+  const select = document.getElementById('inPartSelect');
+  const cost = parseFloat(document.getElementById('inPartActualCost').value) || 0;
+  let name = select.value;
+  if (name === 'custom') name = document.getElementById('inPartCustomName').value.trim();
+  if (!name) { alert('Select or enter a job/part.'); return; }
+  if (cost <= 0) { alert('Enter the actual cost.'); return; }
+  modalParts.push({ name, cost, type: 'part', date: Date.now() });
+  renderModalParts();
+  select.value = '';
+  document.getElementById('inPartActualCost').value = '';
+  document.getElementById('inPartCustomName').value = '';
+  document.getElementById('inPartCustomWrap').style.display = 'none';
+});
+
+// Cart Modal
+document.getElementById('fabBtn').addEventListener('click', () => document.getElementById('cartModal').classList.add('open'));
+document.getElementById('cartModalClose').addEventListener('click', closeCartModal);
+document.getElementById('cartModalCancel').addEventListener('click', closeCartModal);
+document.getElementById('cartModal').addEventListener('click', e => { if(e.target===document.getElementById('cartModal')) closeCartModal(); });
+
+function closeCartModal() {
+  document.getElementById('cartModal').classList.remove('open');
+  ['inName','inMake','inModel','inYear','inPurchase','inValue','inNotes','inPartActualCost','inPartCustomName'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('inStatus').value = 'available';
+  document.getElementById('inPartSelect').value = '';
+  document.getElementById('inPartCustomWrap').style.display = 'none';
+  modalParts = [];
+  renderModalParts();
+}
+
+document.getElementById('cartModalSave').addEventListener('click', async () => {
+  const name = document.getElementById('inName').value.trim();
+  if (!name) { alert('Cart name is required.'); return; }
+  const cart = {
+    id: nextId++,
+    name,
+    make: document.getElementById('inMake').value.trim(),
+    model: document.getElementById('inModel').value.trim(),
+    year: parseInt(document.getElementById('inYear').value) || null,
+    status: document.getElementById('inStatus').value,
+    purchasePrice: parseFloat(document.getElementById('inPurchase').value) || 0,
+    estValue: parseFloat(document.getElementById('inValue').value) || 0,
+    notes: document.getElementById('inNotes').value.trim(),
+    parts: [...modalParts],
+    createdAt: Date.now()
+  };
+  await saveCart(cart);
+  closeCartModal();
+});
+
+// Part Modal
+document.getElementById('partModalClose').addEventListener('click', closePartModal);
+document.getElementById('partModalCancel').addEventListener('click', closePartModal);
+document.getElementById('partModal').addEventListener('click', e => { if(e.target===document.getElementById('partModal')) closePartModal(); });
+
+function closePartModal() {
+  document.getElementById('partModal').classList.remove('open');
+  document.getElementById('inPartName').value = '';
+  document.getElementById('inPartCost').value = '';
+  document.getElementById('inPartType').value = 'part';
+  activePartCartId = null;
+}
+
+document.getElementById('partModalSave').addEventListener('click', async () => {
+  const name = document.getElementById('inPartName').value.trim();
+  const cost = parseFloat(document.getElementById('inPartCost').value) || 0;
+  const type = document.getElementById('inPartType').value;
+  if (!name) { alert('Description is required.'); return; }
+  const cart = carts.find(c => c.id === activePartCartId);
+  if (!cart) return;
+  const parts = [...(cart.parts || []), { name, cost, type, date: Date.now() }];
+  await updateCart(activePartCartId, { parts });
+  closePartModal();
+});
+
+// ── INIT ──────────────────────────────────────────────
+startSync();
+</script>
+</body>
+</html>
