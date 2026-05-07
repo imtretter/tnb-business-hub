@@ -897,9 +897,63 @@ async function findOrCreateCustomer(first, last, email) {
   throw new Error('Customer creation failed: ' + (errors || JSON.stringify(createRes?.errors)));
 }
 
+async function getOrCreateProduct(name, unitPrice, isTaxable) {
+  // Search for existing product
+  const query = `
+    query($bizId: ID!) {
+      business(id: $bizId) {
+        products(page: 1, pageSize: 200) {
+          edges { node { id name defaultUnitAmount isSold } }
+        }
+      }
+    }
+  `;
+  const res = await waveQuery(query, { bizId: WAVE_BIZ_GQL_ID });
+  const products = res?.data?.business?.products?.edges || [];
+  const existing = products.find(p => p.node.name.toLowerCase() === name.toLowerCase());
+  if (existing) return existing.node.id;
+
+  // Create product
+  const mutation = `
+    mutation($input: ProductCreateInput!) {
+      productCreate(input: $input) {
+        product { id name }
+        didSucceed
+        inputErrors { message }
+      }
+    }
+  `;
+  const createRes = await waveQuery(mutation, {
+    input: {
+      businessId: WAVE_BIZ_GQL_ID,
+      name,
+      unitPrice: unitPrice.toFixed(2),
+      isSold: true,
+      isBought: false
+    }
+  });
+  if (createRes?.data?.productCreate?.didSucceed) {
+    return createRes.data.productCreate.product.id;
+  }
+  return null;
+}
+
 async function createWaveInvoice(customerId, lineItems, notes) {
   const today = new Date().toISOString().split('T')[0];
   const due = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+
+  // Build items with productIds
+  const items = [];
+  for (const item of lineItems) {
+    const productId = await getOrCreateProduct(item.description, parseFloat(item.unitPrice), item.taxable);
+    if (!productId) { console.error('Could not get product for:', item.description); continue; }
+    items.push({
+      productId,
+      quantity: parseFloat(item.quantity),
+      unitPrice: parseFloat(item.unitPrice),
+      description: item.description
+    });
+  }
 
   const mutation = `
     mutation($input: InvoiceCreateInput!) {
@@ -918,15 +972,12 @@ async function createWaveInvoice(customerId, lineItems, notes) {
     invoiceDate: today,
     dueDate: due,
     memo: notes || "Thank you for your business! — Tretter No Better LLC",
-    items: lineItems.map(item => ({
-      description: item.description,
-      quantity: parseFloat(item.quantity),
-      unitPrice: parseFloat(item.unitPrice),
-      taxable: item.taxable
-    }))
+    items
   };
 
+  console.log('Creating invoice with:', JSON.stringify(input));
   const res = await waveQuery(mutation, { input });
+  console.log('Invoice result:', JSON.stringify(res));
   if (res?.data?.invoiceCreate?.didSucceed) {
     return { success: true, invoice: res.data.invoiceCreate.invoice };
   }
