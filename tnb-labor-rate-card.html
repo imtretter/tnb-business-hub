@@ -525,6 +525,23 @@
     border-radius: 2px;
     padding: 0 1px;
   }
+
+  .btn-reset {
+    margin-left: auto;
+    background: none;
+    border: 1px solid #3f2020;
+    color: #ef4444;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+
+  .btn-reset:hover { background: rgba(239,68,68,0.1); }
 </style>
 </head>
 <body>
@@ -545,6 +562,7 @@
     <span>/ hr</span>
   </div>
   <div class="rate-badge" id="rateBadge">All prices at $65/hr</div>
+  <button class="btn-reset" id="resetBtn">↺ Reset to Defaults</button>
 </div>
 
 <div class="search-wrap">
@@ -847,6 +865,20 @@ async function deleteTask(e, id) {
   await removeTask(id);
   expandedId = null;
 }
+
+async function resetToDefaults() {
+  if (!confirm('This will delete all custom tasks and restore the full default library. Continue?')) return;
+  document.getElementById('syncStatus').textContent = '⟳ Resetting...';
+  // Delete everything currently in Firestore
+  const snapshot = await getDocs(tasksCol);
+  for (const d of snapshot.docs) {
+    await deleteDoc(doc(db, "tasks", d.id));
+  }
+  // Seed defaults — onSnapshot will fire and re-render automatically
+  await seedDefaultTasks();
+}
+
+document.getElementById('resetBtn').addEventListener('click', resetToDefaults);
 
 // Search
 const searchInput = document.getElementById('searchInput');
