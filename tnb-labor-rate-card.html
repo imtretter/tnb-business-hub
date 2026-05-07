@@ -73,43 +73,6 @@
     margin-top: 2px;
   }
 
-  /* NAV BAR */
-  .nav-bar {
-    background: var(--black);
-    border-bottom: 1px solid var(--border);
-    padding: 8px 20px;
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .nav-bar::-webkit-scrollbar { display: none; }
-  .nav-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--panel);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.5px;
-    padding: 6px 12px;
-    border-radius: 4px;
-    text-decoration: none;
-    white-space: nowrap;
-    transition: all 0.15s;
-  }
-  .nav-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-  .nav-btn.active {
-    background: var(--accent-dim);
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
   /* RATE BAR */
   .rate-bar {
     background: var(--panel);
@@ -565,31 +528,6 @@
 </style>
 </head>
 <body>
-<script>
-(function() {
-  const PASS = "1234qwer";
-  const KEY = "tnb_auth";
-  if (sessionStorage.getItem(KEY) !== PASS) {
-    const overlay = document.createElement("div");
-    overlay.style.cssText = "position:fixed;inset:0;background:#0a0a0a;z-index:99999;display:flex;align-items:center;justify-content:center;font-family:DM Sans,sans-serif;";
-    overlay.innerHTML = `<div style="text-align:center;padding:40px 24px;max-width:360px;width:100%;"><div style="font-family:Bebas Neue,cursive;font-size:48px;letter-spacing:4px;color:#e8b84b;line-height:1;">TNB</div><div style="font-size:11px;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;">Business Hub · Private Access</div><input id="tnb-pw" type="password" placeholder="Enter password..." style="width:100%;background:#1a1c20;border:1px solid #2a2d33;border-radius:6px;color:#e8e8e8;font-size:16px;padding:12px 16px;outline:none;text-align:center;letter-spacing:2px;margin-bottom:12px;"><button id="tnb-go" style="width:100%;background:#e8b84b;border:none;color:#0a0a0a;font-family:Bebas Neue,cursive;font-size:20px;letter-spacing:2px;padding:12px;border-radius:6px;cursor:pointer;">Enter</button><div id="tnb-err" style="color:#ef4444;font-size:12px;margin-top:10px;font-family:DM Mono,monospace;display:none;">Incorrect password. Try again.</div></div>`;
-    document.body.appendChild(overlay);
-    function tryLogin() {
-      if (document.getElementById("tnb-pw").value === PASS) {
-        sessionStorage.setItem(KEY, PASS);
-        overlay.remove();
-      } else {
-        document.getElementById("tnb-err").style.display = "block";
-        document.getElementById("tnb-pw").value = "";
-        document.getElementById("tnb-pw").focus();
-      }
-    }
-    document.getElementById("tnb-go").addEventListener("click", tryLogin);
-    document.getElementById("tnb-pw").addEventListener("keydown", e => { if(e.key === "Enter") tryLogin(); });
-    document.getElementById("tnb-pw").focus();
-  }
-})();
-</script>
 
 <header>
   <div class="logo-mark">TNB</div>
@@ -598,13 +536,6 @@
     <p>Tretter No Better · Golf Carts &nbsp;<span id="syncStatus" style="color:#4ade80;font-size:10px;">Connecting...</span></p>
   </div>
 </header>
-
-<nav class="nav-bar">
-  <a class="nav-btn" href="./index.html">🏠 Hub</a>
-  <a class="nav-btn active" href="./tnb-labor-rate-card.html">🔧 Labor Rate Card</a>
-  <a class="nav-btn" href="./golf-cart-tracker.html">🛻 Cart Tracker</a>
-  <a class="nav-btn" href="./tnb-quote-generator.html">📋 Quote Generator</a>
-</nav>
 
 <div class="rate-bar">
   <label>Hourly Rate</label>
@@ -644,18 +575,25 @@
     <div class="form-group">
       <label>Category</label>
       <select id="taskCatInput">
-        <option value="Electrical">Electrical</option>
-        <option value="Body & Accessories">Body & Accessories</option>
-        <option value="Drivetrain">Drivetrain</option>
-        <option value="Batteries">Batteries</option>
-        <option value="Brakes & Steering">Brakes & Steering</option>
+        <option value="Diagnostics">Diagnostics</option>
         <option value="Maintenance">Maintenance</option>
+        <option value="Gas Engine">Gas Engine</option>
+        <option value="Batteries">Batteries</option>
+        <option value="Electrical">Electrical</option>
+        <option value="Brakes & Steering">Brakes &amp; Steering</option>
+        <option value="Tires & Wheels">Tires &amp; Wheels</option>
+        <option value="Drivetrain">Drivetrain</option>
+        <option value="Body & Accessories">Body &amp; Accessories</option>
         <option value="Other">Other</option>
       </select>
     </div>
     <div class="form-group">
       <label>Labor Hours</label>
-      <input type="number" id="taskHoursInput" placeholder="e.g. 2.5" min="0.25" step="0.25">
+      <input type="number" id="taskHoursInput" placeholder="e.g. 1.5" min="0.25" step="0.25">
+    </div>
+    <div class="form-group">
+      <label>Notes (optional)</label>
+      <textarea id="taskNotesInput" placeholder="e.g. +0.2 hrs if drum stuck; parts not included" style="width:100%;background:var(--panel);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;outline:none;resize:vertical;min-height:64px;transition:border-color 0.2s;"></textarea>
     </div>
     <div class="modal-actions">
       <button class="btn-cancel" id="modalCancel">Cancel</button>
@@ -683,45 +621,84 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const tasksCol = collection(db, "tasks");
 
-// ── DEFAULT TASK LIBRARY ──────────────────────────────────────────
+// ── DEFAULT TASK LIBRARY (research-backed) ────────────────────────
 const DEFAULT_TASKS = [
-  // Batteries
-  { id: 1, name: "Battery Pack Replacement (6V x6)", category: "Batteries", hours: 2.0 },
-  { id: 2, name: "Battery Pack Replacement (8V x6)", category: "Batteries", hours: 2.0 },
-  { id: 3, name: "Battery Cable Replacement", category: "Batteries", hours: 1.0 },
-  { id: 4, name: "Battery Charger Port Replacement", category: "Batteries", hours: 0.5 },
-  { id: 5, name: "Lithium Battery Conversion", category: "Batteries", hours: 4.0 },
-  // Electrical
-  { id: 6, name: "Solenoid Replacement", category: "Electrical", hours: 1.0 },
-  { id: 7, name: "Controller Replacement", category: "Electrical", hours: 2.0 },
-  { id: 8, name: "Forward/Reverse Switch Replacement", category: "Electrical", hours: 1.0 },
-  { id: 9, name: "Key Switch Replacement", category: "Electrical", hours: 0.5 },
-  { id: 10, name: "Light Kit Install (Full)", category: "Electrical", hours: 3.0 },
-  { id: 11, name: "Horn Install", category: "Electrical", hours: 0.5 },
-  { id: 12, name: "Speed Sensor Replacement", category: "Electrical", hours: 1.5 },
-  // Body & Accessories
-  { id: 13, name: "Rear Seat Kit Install", category: "Body & Accessories", hours: 3.0 },
-  { id: 14, name: "Windshield Install", category: "Body & Accessories", hours: 1.0 },
-  { id: 15, name: "Roof/Canopy Replacement", category: "Body & Accessories", hours: 1.5 },
-  { id: 16, name: "Body Panel Replacement (per panel)", category: "Body & Accessories", hours: 0.75 },
-  { id: 17, name: "Lift Kit Install", category: "Body & Accessories", hours: 4.0 },
-  { id: 18, name: "Custom Wheel & Tire Swap (set of 4)", category: "Body & Accessories", hours: 2.0 },
-  { id: 19, name: "Side Mirror Install", category: "Body & Accessories", hours: 0.5 },
-  { id: 20, name: "Enclosure Install", category: "Body & Accessories", hours: 2.5 },
-  // Drivetrain
-  { id: 21, name: "Motor Replacement", category: "Drivetrain", hours: 3.0 },
-  { id: 22, name: "Motor Brush Replacement", category: "Drivetrain", hours: 1.5 },
-  { id: 23, name: "Belt Replacement", category: "Drivetrain", hours: 1.0 },
-  { id: 24, name: "Differential Service", category: "Drivetrain", hours: 2.0 },
-  // Brakes & Steering
-  { id: 25, name: "Brake Shoe Replacement (rear)", category: "Brakes & Steering", hours: 2.0 },
-  { id: 26, name: "Brake Cable Adjustment", category: "Brakes & Steering", hours: 0.5 },
-  { id: 27, name: "Steering Wheel Replacement", category: "Brakes & Steering", hours: 0.75 },
-  { id: 28, name: "Tie Rod End Replacement", category: "Brakes & Steering", hours: 1.5 },
-  // Maintenance
-  { id: 29, name: "Full Inspection & Report", category: "Maintenance", hours: 1.5 },
-  { id: 30, name: "Lube & Maintenance Service", category: "Maintenance", hours: 1.0 },
-  { id: 31, name: "Wash & Detail", category: "Maintenance", hours: 1.5 },
+  // DIAGNOSTICS
+  { id: 1,  name: "General Diagnostic / Fault Code Scan",                     category: "Diagnostics",       hours: 1.0,  notes: "Electrical fault codes, basic system check. Up to 2 hrs included before parts recommendation." },
+  { id: 2,  name: "Battery Load Test & Inspection",                            category: "Diagnostics",       hours: 0.5,  notes: "State of charge, load test, terminal + cable inspection, water level check." },
+  { id: 3,  name: "Pre-Sale / 20-Point Inspection",                            category: "Diagnostics",       hours: 1.5,  notes: "Full visual + functional inspection; includes tire, brake, and electrical check." },
+  { id: 4,  name: "Charger Diagnosis",                                         category: "Diagnostics",       hours: 0.5,  notes: "Output voltage test; on-the-spot repair if feasible. Parts extra." },
+  { id: 5,  name: "Electrical System Diagnosis (Advanced)",                    category: "Diagnostics",       hours: 2.0,  notes: "Controller, solenoid, motor, sensor faults. Labor only — parts quoted separately." },
+  // MAINTENANCE
+  { id: 10, name: "Electric Cart Annual Service",                              category: "Maintenance",       hours: 1.5,  notes: "Battery check, terminal clean, tire rotation + pressure, alignment check, grease fittings, 20-pt inspection." },
+  { id: 11, name: "Lube & Grease All Fittings",                               category: "Maintenance",       hours: 0.25, notes: "All applicable grease points. Often bundled with annual service." },
+  { id: 12, name: "Battery Watering & Terminal Clean",                         category: "Maintenance",       hours: 0.5,  notes: "Check water levels, fill to spec, clean & treat terminals." },
+  { id: 13, name: "Wash & Detail",                                             category: "Maintenance",       hours: 1.5,  notes: "Full exterior wash, interior wipe-down, tire shine." },
+  { id: 14, name: "Storage Prep / Winterization",                              category: "Maintenance",       hours: 1.0,  notes: "Battery charge to storage level, tire inflation, fluid check, cover." },
+  { id: 15, name: "Spring Startup Service",                                    category: "Maintenance",       hours: 1.0,  notes: "Battery check, fluid top-off, tire pressure, test drive." },
+  // GAS ENGINE
+  { id: 20, name: "Gas Cart Tune-Up",                                          category: "Gas Engine",        hours: 1.5,  notes: "Spark plugs, air/fuel/oil filter, oil change, grease fittings. Parts extra. Kit contents vary by brand." },
+  { id: 21, name: "Oil & Filter Change",                                       category: "Gas Engine",        hours: 0.5,  notes: "SAE 10W-30 (Yamaha) or SAE 30 (all others). Oil and filter extra." },
+  { id: 22, name: "Air Filter Replacement",                                    category: "Gas Engine",        hours: 0.25, notes: "Part extra." },
+  { id: 23, name: "Spark Plug Replacement",                                    category: "Gas Engine",        hours: 0.25, notes: "Parts extra." },
+  { id: 24, name: "Fuel Filter Replacement",                                   category: "Gas Engine",        hours: 0.5,  notes: "Part extra." },
+  { id: 25, name: "Carburetor Clean / Rebuild",                                category: "Gas Engine",        hours: 1.5,  notes: "Disassemble, clean, reassemble, adjust. Parts extra if rebuild kit needed." },
+  { id: 26, name: "Gas Engine Replacement",                                    category: "Gas Engine",        hours: 4.5,  notes: "Full swap; highly variable by model and access. Range: 3–6+ hrs." },
+  // BATTERIES
+  { id: 30, name: "Battery Pack Replacement (6V x6, Lead-Acid)",               category: "Batteries",         hours: 2.0,  notes: "Remove old pack, clean tray, install new, connect cables, test. Cable R&R extra." },
+  { id: 31, name: "Battery Pack Replacement (8V x6, Lead-Acid)",               category: "Batteries",         hours: 2.0,  notes: "Remove old pack, clean tray, install new, connect cables, test. Cable R&R extra." },
+  { id: 32, name: "Battery Pack Replacement (12V x4, Lead-Acid)",              category: "Batteries",         hours: 1.5,  notes: "Fewer batteries; faster swap. Cable R&R extra." },
+  { id: 33, name: "Lithium Battery Conversion / Kit Install",                  category: "Batteries",         hours: 3.0,  notes: "Includes charger swap, BMS setup, cable reconfiguration. Range: 2–4 hrs depending on kit." },
+  { id: 34, name: "Battery Cable Replacement (per cable)",                     category: "Batteries",         hours: 0.5,  notes: "Includes terminal cleaning. Additional cables billed per cable." },
+  { id: 35, name: "Battery Tray Cleaning & Treatment",                         category: "Batteries",         hours: 0.5,  notes: "Acid neutralize, clean, dry, treat. Often done with pack replacement." },
+  { id: 36, name: "Battery Discharge Service",                                 category: "Batteries",         hours: 0.5,  notes: "Controlled discharge cycle for pack conditioning." },
+  // ELECTRICAL
+  { id: 40, name: "Solenoid Replacement",                                      category: "Electrical",        hours: 0.75, notes: "Straightforward swap on most models. Diagnosis may add 0.5 hr if needed." },
+  { id: 41, name: "Speed Controller Replacement",                              category: "Electrical",        hours: 1.5,  notes: "R&R controller. Programming/pairing may add 0.5 hr depending on model." },
+  { id: 42, name: "Forward / Reverse Switch Replacement",                      category: "Electrical",        hours: 1.0,  notes: "" },
+  { id: 43, name: "Key Switch Replacement",                                    category: "Electrical",        hours: 0.5,  notes: "" },
+  { id: 44, name: "Speed Sensor / Encoder Replacement",                        category: "Electrical",        hours: 1.5,  notes: "Common fault on EZGO RXV Danaher systems. Fault code scan recommended first." },
+  { id: 45, name: "Charger Port Replacement",                                  category: "Electrical",        hours: 0.5,  notes: "" },
+  { id: 46, name: "Charger Repair / Rebuild",                                  category: "Electrical",        hours: 1.0,  notes: "Flat-rate labor if transformer is serviceable. Not all chargers are repairable." },
+  { id: 47, name: "LED Light Kit Install (Full — Front & Rear)",               category: "Electrical",        hours: 1.5,  notes: "Includes wiring run. Underbody or accent lighting adds 0.5 hr." },
+  { id: 48, name: "Horn Install",                                              category: "Electrical",        hours: 0.5,  notes: "" },
+  { id: 49, name: "Wiring Repair (Minor — pinch, loose connector)",            category: "Electrical",        hours: 1.0,  notes: "Range: 0.5–1.5 hrs depending on access and complexity." },
+  { id: 50, name: "Full Rewire / Major Electrical Overhaul",                   category: "Electrical",        hours: 4.0,  notes: "Controller, solenoid, cables — full system. Range: 3–5+ hrs." },
+  { id: 51, name: "Speed Code / Limiter Adjustment",                           category: "Electrical",        hours: 0.5,  notes: "Controller programming. Often bundled with controller or motor jobs." },
+  { id: 52, name: "Sound System Install",                                      category: "Electrical",        hours: 1.5,  notes: "Head unit + speakers + wiring. Range: 1–2.5 hrs based on complexity." },
+  // BRAKES & STEERING
+  { id: 60, name: "Brake Shoe Replacement (Club Car — Self-Adjusting)",        category: "Brakes & Steering", hours: 0.6,  notes: "Base rate per SOP. +0.1 stuck clevis pin, +0.2 stuck drum, +0.3 resurface drums." },
+  { id: 61, name: "Brake Shoe Replacement (EZGO / Yamaha)",                    category: "Brakes & Steering", hours: 1.0,  notes: "Slightly more involved access than Club Car. Inspect drums; resurface or replace if grooved." },
+  { id: 62, name: "Brake Equalizer Rod Adjustment (Club Car Precedent)",       category: "Brakes & Steering", hours: 0.2,  notes: "+0.2 if floor mat R&R required. Per shop SOP." },
+  { id: 63, name: "Brake Maintenance (Lube, Adjust, Inspect — No Replacement)",category: "Brakes & Steering", hours: 0.4,  notes: "Drum pull, lube slides/cables, adjuster check, reassemble. Per shop SOP." },
+  { id: 64, name: "Front-End Alignment (Non-Lifted Club Car Precedent/Tempo)", category: "Brakes & Steering", hours: 0.2,  notes: "+0.1 hr if steering wheel removal needed. Per shop SOP." },
+  { id: 65, name: "Front-End Alignment (Lifted / Other Models)",               category: "Brakes & Steering", hours: 0.75, notes: "More variation in lifted suspension setups." },
+  { id: 66, name: "Steering Wheel Replacement",                                category: "Brakes & Steering", hours: 0.75, notes: "" },
+  { id: 67, name: "Tie Rod End Replacement",                                   category: "Brakes & Steering", hours: 1.5,  notes: "Includes alignment check after." },
+  { id: 68, name: "Brake Cable Replacement",                                   category: "Brakes & Steering", hours: 0.75, notes: "Per cable. Includes equalizer adjustment." },
+  // TIRES & WHEELS
+  { id: 70, name: "Flat Tire Repair (Plug or Patch)",                          category: "Tires & Wheels",    hours: 0.5,  notes: "Dismount/remount if needed." },
+  { id: 71, name: "Tire Replacement (per tire — already on rim)",              category: "Tires & Wheels",    hours: 0.25, notes: "Swap and torque. Standard 18x8.5x8 or 22x11x8." },
+  { id: 72, name: "Full Tire & Wheel Swap (set of 4)",                         category: "Tires & Wheels",    hours: 1.5,  notes: "Dismount, mount, balance, torque all four." },
+  { id: 73, name: "Tire Rotation & Pressure Check",                            category: "Tires & Wheels",    hours: 0.25, notes: "Often bundled with annual service." },
+  // DRIVETRAIN
+  { id: 80, name: "Electric Motor Replacement",                                category: "Drivetrain",        hours: 2.0,  notes: "R&R motor. Controller pairing or programming may add 0.5 hr." },
+  { id: 81, name: "Motor Brush Replacement",                                   category: "Drivetrain",        hours: 1.5,  notes: "Requires motor removal on most models." },
+  { id: 82, name: "Drive Belt / CVT Belt Replacement (Gas)",                   category: "Drivetrain",        hours: 0.75, notes: "Routine wear item. Relatively straightforward." },
+  { id: 83, name: "Primary / Secondary Clutch Replacement (Gas)",              category: "Drivetrain",        hours: 1.5,  notes: "Includes belt R&R." },
+  { id: 84, name: "Rear Axle Replacement",                                     category: "Drivetrain",        hours: 3.0,  notes: "Labor-intensive. Includes bearing inspection. Range: 2–4 hrs." },
+  { id: 85, name: "Differential Service",                                      category: "Drivetrain",        hours: 2.0,  notes: "Fluid drain/fill, inspect, reseal if needed." },
+  // BODY & ACCESSORIES
+  { id: 90, name: "Lift Kit Install (Standard 3–4\" Bolt-On)",                 category: "Body & Accessories", hours: 3.0, notes: "New spindles, A-arms, or drop brackets. Alignment included after. Range: 2–4 hrs." },
+  { id: 91, name: "Rear Seat Kit Install",                                     category: "Body & Accessories", hours: 3.0, notes: "Includes mounting hardware and safety check." },
+  { id: 92, name: "Seat Replacement / Upgrade",                                category: "Body & Accessories", hours: 0.75,notes: "Bolt-on swap. Custom upholstery installs vary." },
+  { id: 93, name: "Windshield Install",                                        category: "Body & Accessories", hours: 1.0, notes: "" },
+  { id: 94, name: "Roof / Canopy Replacement",                                 category: "Body & Accessories", hours: 1.5, notes: "" },
+  { id: 95, name: "Enclosure Install",                                         category: "Body & Accessories", hours: 2.0, notes: "Range: 1.5–2.5 hrs depending on kit complexity." },
+  { id: 96, name: "Body Panel Replacement (per panel)",                        category: "Body & Accessories", hours: 0.75,notes: "" },
+  { id: 97, name: "Side Mirror Install",                                       category: "Body & Accessories", hours: 0.5, notes: "" },
+  { id: 98, name: "LSV Street-Legal Conversion Kit",                           category: "Body & Accessories", hours: 3.0, notes: "Lights, mirrors, seatbelts, horn, reflectors. Full compliance hardware + wiring. Range: 2–4 hrs." },
+  { id: 99, name: "Custom Wheel & Tire Swap (set of 4)",                       category: "Body & Accessories", hours: 1.5, notes: "New rubber on new wheels; dismount, mount, torque." },
 ];
 
 // ── STATE ──────────────────────────────────────────────────────────
@@ -730,7 +707,7 @@ let rate = 65;
 let searchTerm = '';
 let activeCategory = 'All';
 let expandedId = null;
-let nextId = 100;
+let nextId = 200;
 
 // ── FIRESTORE SYNC ────────────────────────────────────────────────
 async function seedDefaultTasks() {
@@ -755,7 +732,7 @@ function startSync() {
       return;
     }
     tasks = snapshot.docs.map(d => d.data());
-    nextId = Math.max(...tasks.map(t => t.id), 99) + 1;
+    nextId = Math.max(...tasks.map(t => Number(t.id) || 0), 199) + 1;
     document.getElementById('syncStatus').textContent = '✓ Synced';
     render();
   }, (err) => {
@@ -775,7 +752,7 @@ function getCategories() {
 function getFiltered() {
   return tasks.filter(t => {
     const matchCat = activeCategory === 'All' || t.category === activeCategory;
-    const matchSearch = !searchTerm || t.name.toLowerCase().includes(searchTerm.toLowerCase()) || t.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchSearch = !searchTerm || t.name.toLowerCase().includes(searchTerm.toLowerCase()) || t.category.toLowerCase().includes(searchTerm.toLowerCase()) || (t.notes && t.notes.toLowerCase().includes(searchTerm.toLowerCase()));
     return matchCat && matchSearch;
   }).sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -838,6 +815,7 @@ function renderTasks() {
             <div class="ds-value" style="font-size:14px;margin-top:6px">${t.category}</div>
             <div class="ds-sub">&nbsp;</div>
           </div>
+          ${t.notes ? `<div class="detail-stat" style="flex-basis:100%;min-width:100%;"><div class="ds-label">Notes</div><div style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.5;">${t.notes}</div></div>` : ''}
           <button class="btn-delete" onclick="deleteTask(event, ${t.id})">🗑 Remove Task</button>
         </div>
       </div>
@@ -906,15 +884,17 @@ function closeModal() {
   overlay.classList.remove('open');
   document.getElementById('taskNameInput').value = '';
   document.getElementById('taskHoursInput').value = '';
+  document.getElementById('taskNotesInput').value = '';
 }
 
 document.getElementById('modalSave').addEventListener('click', async () => {
   const name = document.getElementById('taskNameInput').value.trim();
   const cat = document.getElementById('taskCatInput').value;
   const hours = parseFloat(document.getElementById('taskHoursInput').value);
+  const notes = document.getElementById('taskNotesInput').value.trim();
   if (!name) { alert('Task name is required.'); return; }
   if (!hours || hours <= 0) { alert('Enter valid labor hours.'); return; }
-  const newTask = { id: nextId++, name, category: cat, hours };
+  const newTask = { id: nextId++, name, category: cat, hours, notes };
   await saveTask(newTask);
   closeModal();
 });
