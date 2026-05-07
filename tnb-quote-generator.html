@@ -786,38 +786,39 @@ window.pushToWave = async function() {
 
     btnText.textContent = 'Creating invoice...';
 
-    // Step 2: Build line items
+    // Step 2: Build line items with Wave product IDs
     const cartTotal = selectedCart ? (parseFloat(document.getElementById('cartSalePrice').value) || 0) : 0;
     const notes = document.getElementById('quoteNotes').value.trim();
 
-    const lineItems = [];
+    const rawItems = [];
 
     if (selectedCart && cartTotal > 0) {
-      lineItems.push({
+      rawItems.push({
         description: selectedCart.name + ' — ' + [selectedCart.year, selectedCart.make, selectedCart.model].filter(Boolean).join(' '),
-        quantity: "1",
-        unitPrice: cartTotal.toFixed(2),
-        taxable: true
+        unitPrice: cartTotal
       });
     }
 
     laborLines.forEach(l => {
-      lineItems.push({
+      rawItems.push({
         description: l.name + ` (${l.hours} hr${l.hours !== 1 ? 's' : ''})`,
-        quantity: "1",
-        unitPrice: l.price.toFixed(2),
-        taxable: l.taxable
+        unitPrice: l.price
       });
     });
 
     partLines.forEach(p => {
-      lineItems.push({
-        description: p.name,
-        quantity: "1",
-        unitPrice: p.price.toFixed(2),
-        taxable: true
-      });
+      rawItems.push({ description: p.name, unitPrice: p.price });
     });
+
+    // Resolve each item to a Wave product ID
+    btnText.textContent = 'Syncing products...';
+    const lineItems = [];
+    for (const item of rawItems) {
+      const productId = await getOrCreateProduct(item.description, item.unitPrice);
+      if (productId) {
+        lineItems.push({ productId, quantity: 1, unitPrice: item.unitPrice, description: item.description });
+      }
+    }
 
     // Step 3: Create invoice in Wave
     const invoiceResult = await createWaveInvoice(customerId, lineItems, notes);
@@ -972,7 +973,11 @@ async function createWaveInvoice(customerId, lineItems, notes) {
     invoiceDate: today,
     dueDate: due,
     memo: notes || "Thank you for your business! — Tretter No Better LLC",
-    items
+    items: lineItems.map(item => ({
+      productId: item.productId,
+      quantity: item.quantity,
+      unitPrice: parseFloat(item.unitPrice)
+    }))
   };
 
   console.log('Creating invoice with:', JSON.stringify(input));
