@@ -898,6 +898,19 @@ async function findOrCreateCustomer(first, last, email) {
 let WAVE_ACCOUNTS = {};
 let WAVE_PRODUCTS_CACHE = {};
 
+async function introspectProductCreate() {
+  const query = `{
+    __type(name: "ProductCreateInput") {
+      inputFields {
+        name
+        type { name kind ofType { name kind } }
+      }
+    }
+  }`;
+  const res = await waveQuery(query);
+  console.log('ProductCreateInput fields:', JSON.stringify(res?.data?.__type?.inputFields?.map(f => f.name)));
+}
+
 async function loadWaveAccounts() {
   if (Object.keys(WAVE_ACCOUNTS).length > 0) return;
   const query = `
@@ -1021,6 +1034,7 @@ function showToast(msg, type = 'success') {
 // ── INIT ──────────────────────────────────────────────
 loadData();
 initWave();
+introspectProductCreate();
 renderLaborItems();
 renderPartItems();
 updateTotals();
