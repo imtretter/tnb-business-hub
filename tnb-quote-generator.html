@@ -896,6 +896,7 @@ async function findOrCreateCustomer(first, last, email) {
 }
 
 let WAVE_ACCOUNTS = {};
+let WAVE_PRODUCTS_CACHE = {};
 
 async function loadWaveAccounts() {
   if (Object.keys(WAVE_ACCOUNTS).length > 0) return;
@@ -914,23 +915,70 @@ async function loadWaveAccounts() {
   console.log('Loaded Wave accounts:', Object.keys(WAVE_ACCOUNTS));
 }
 
-async function createWaveInvoice(customerId, lineItems, notes) {
+async function getOrCreateProduct(name, unitPrice, type) {
+  if (WAVE_PRODUCTS_CACHE[name]) return WAVE_PRODUCTS_CACHE[name];
   await loadWaveAccounts();
+  const incomeAccountId = (type === 'cart' || type === 'part')
+    ? (WAVE_ACCOUNTS['Golf Cart Sales'] || Object.values(WAVE_ACCOUNTS)[0])
+    : (WAVE_ACCOUNTS['Repair Services'] || Object.values(WAVE_ACCOUNTS)[0]);
 
-  const repairId = WAVE_ACCOUNTS['Repair Services'] || Object.values(WAVE_ACCOUNTS)[0];
-  const salesId = WAVE_ACCOUNTS['Golf Cart Sales'] || Object.values(WAVE_ACCOUNTS)[0];
+  // Search existing products
+  const searchRes = await waveQuery(`
+    query($bizId: ID!) {
+      business(id: $bizId) {
+        products(page: 1, pageSize: 200) {
+          edges { node { id name } }
+        }
+      }
+    }
+  `, { bizId: WAVE_BIZ_GQL_ID });
+  const products = searchRes?.data?.business?.products?.edges || [];
+  const found = products.find(p => p.node.name.toLowerCase() === name.toLowerCase());
+  if (found) { WAVE_PRODUCTS_CACHE[name] = found.node.id; return found.node.id; }
 
+  // Create product using inline mutation (avoids variable type issues)
+  const safeName = name.replace(/"/g, '\\"');
+  const createRes = await waveQuery(`
+    mutation {
+      productCreate(input: {
+        businessId: "${WAVE_BIZ_GQL_ID}"
+        name: "${safeName}"
+        unitPrice: ${parseFloat(unitPrice.toFixed(2))}
+        isSold: true
+        isBought: false
+        incomeAccountId: "${incomeAccountId}"
+      }) {
+        product { id name }
+        didSucceed
+        inputErrors { message code path }
+      }
+    }
+  `);
+  console.log('Product create result for', name, ':', JSON.stringify(createRes?.data?.productCreate));
+  if (createRes?.data?.productCreate?.didSucceed) {
+    const id = createRes.data.productCreate.product.id;
+    WAVE_PRODUCTS_CACHE[name] = id;
+    return id;
+  }
+  console.error('Product create failed:', JSON.stringify(createRes?.data?.productCreate?.inputErrors), JSON.stringify(createRes?.errors));
+  return null;
+}
+
+async function createWaveInvoice(customerId, lineItems, notes) {
   const today = new Date().toISOString().split('T')[0];
   const due = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
 
-  const items = lineItems.map(item => ({
-    accountId: item.type === 'cart' ? salesId : item.type === 'part' ? salesId : repairId,
-    description: item.description,
-    quantity: 1,
-    unitPrice: parseFloat(item.unitPrice)
-  }));
+  const items = [];
+  for (const item of lineItems) {
+    const productId = await getOrCreateProduct(item.description, item.unitPrice, item.type);
+    if (productId) {
+      items.push({ productId, quantity: 1, unitPrice: parseFloat(item.unitPrice.toFixed(2)) });
+    } else {
+      console.error('No product ID for:', item.description);
+    }
+  }
 
-  console.log('Invoice items:', JSON.stringify(items));
+  console.log('Final invoice items:', JSON.stringify(items));
 
   const mutation = `
     mutation($input: InvoiceCreateInput!) {
@@ -952,7 +1000,7 @@ async function createWaveInvoice(customerId, lineItems, notes) {
     items
   };
 
-  console.log('Creating invoice with:', JSON.stringify(input));
+  console.log('Creating invoice:', JSON.stringify(input));
   const res = await waveQuery(mutation, { input });
   console.log('Invoice result:', JSON.stringify(res));
   if (res?.data?.invoiceCreate?.didSucceed) {
