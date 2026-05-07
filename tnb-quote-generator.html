@@ -773,6 +773,13 @@ window.pushToWave = async function() {
   btnText.textContent = 'Connecting to Wave...';
 
   try {
+    // Ensure Wave is initialized
+    if (!WAVE_BIZ_GQL_ID) {
+      btnText.textContent = 'Connecting to Wave...';
+      await initWave();
+    }
+    if (!WAVE_BIZ_GQL_ID) throw new Error('Could not connect to Wave business. Check API token.');
+
     // Step 1: Find or create customer
     let customerId = await findOrCreateCustomer(first, last, email);
     if (!customerId) throw new Error('Could not create customer in Wave.');
@@ -846,20 +853,11 @@ async function waveQuery(query, variables = {}) {
   return resp.json();
 }
 
-let WAVE_BIZ_GQL_ID = null; // Will be fetched on init
+let WAVE_BIZ_GQL_ID = "QnVzaW5lc3M6YTRjZTYwZDgtOGMxOC00NzVlLTkwZjUtNzU5MmQxODM4Mjdi";
 
 async function initWave() {
-  // Fetch the proper GQL business ID
-  const query = `{ businesses { edges { node { id name } } } }`;
-  const res = await waveQuery(query);
-  console.log('Wave businesses:', JSON.stringify(res));
-  const biz = res?.data?.businesses?.edges?.find(e =>
-    e.node.name.toLowerCase().includes('tretter')
-  ) || res?.data?.businesses?.edges?.[0];
-  if (biz) {
-    WAVE_BIZ_GQL_ID = biz.node.id;
-    console.log('Wave biz GQL ID:', WAVE_BIZ_GQL_ID);
-  }
+  // ID is hardcoded — no lookup needed
+  console.log('Wave GQL Business ID ready:', WAVE_BIZ_GQL_ID);
 }
 
 async function findOrCreateCustomer(first, last, email) {
