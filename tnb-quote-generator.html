@@ -919,8 +919,8 @@ async function loadWaveProductIds() {
   console.log('Wave products:', JSON.stringify(products.map(p => p.node.name)));
   products.forEach(p => {
     const name = p.node.name.toLowerCase();
-    if (name.includes('non-taxable') || name.includes('labor')) WAVE_PRODUCT_IDS.labor = p.node.id;
-    if (name.includes('golf cart sale')) WAVE_PRODUCT_IDS.cart = p.node.id;
+    if (name.includes('non-taxable')) WAVE_PRODUCT_IDS.labor = p.node.id;
+    if (name === 'golf cart sale') WAVE_PRODUCT_IDS.cart = p.node.id;
     if (name.includes('parts') || name.includes('material')) WAVE_PRODUCT_IDS.part = p.node.id;
   });
   console.log('Mapped product IDs:', JSON.stringify(WAVE_PRODUCT_IDS));
