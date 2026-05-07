@@ -848,23 +848,24 @@ function render() {
 }
 
 // ── INTERACTIONS ───────────────────────────────────────────────────
-function setCategory(cat) {
+// Exposed on window so inline onclick attributes can reach them from module scope
+window.setCategory = function(cat) {
   activeCategory = cat;
   expandedId = null;
   render();
-}
+};
 
-function toggleExpand(id) {
+window.toggleExpand = function(id) {
   expandedId = expandedId === id ? null : id;
   renderTasks();
-}
+};
 
-async function deleteTask(e, id) {
+window.deleteTask = async function(e, id) {
   e.stopPropagation();
   if (!confirm('Remove this task from the rate card?')) return;
   await removeTask(id);
   expandedId = null;
-}
+};
 
 async function resetToDefaults() {
   if (!confirm('This will delete all custom tasks and restore the full default library. Continue?')) return;
