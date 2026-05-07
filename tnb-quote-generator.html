@@ -895,48 +895,15 @@ async function findOrCreateCustomer(first, last, email) {
   throw new Error('Customer creation failed: ' + (errors || JSON.stringify(createRes?.errors)));
 }
 
-let WAVE_ACCOUNTS = {};
-let WAVE_PRODUCTS_CACHE = {};
+// Hardcoded Wave product IDs — fetched on init
+const WAVE_PRODUCT_IDS = {
+  labor: null,    // Labor (Non-taxable)
+  cart: null,     // Golf Cart Sale
+  part: null      // Parts & Materials
+};
 
-async function introspectProductCreate() {
-  const query = `{
-    __type(name: "ProductCreateInput") {
-      inputFields {
-        name
-        type { name kind ofType { name kind } }
-      }
-    }
-  }`;
-  const res = await waveQuery(query);
-  console.log('ProductCreateInput fields:', JSON.stringify(res?.data?.__type?.inputFields?.map(f => f.name)));
-}
-
-async function loadWaveAccounts() {
-  if (Object.keys(WAVE_ACCOUNTS).length > 0) return;
+async function loadWaveProductIds() {
   const query = `
-    query($bizId: ID!) {
-      business(id: $bizId) {
-        accounts(subtypes: [INCOME]) {
-          edges { node { id name } }
-        }
-      }
-    }
-  `;
-  const res = await waveQuery(query, { bizId: WAVE_BIZ_GQL_ID });
-  const accounts = res?.data?.business?.accounts?.edges || [];
-  accounts.forEach(a => { WAVE_ACCOUNTS[a.node.name] = a.node.id; });
-  console.log('Loaded Wave accounts:', Object.keys(WAVE_ACCOUNTS));
-}
-
-async function getOrCreateProduct(name, unitPrice, type) {
-  if (WAVE_PRODUCTS_CACHE[name]) return WAVE_PRODUCTS_CACHE[name];
-  await loadWaveAccounts();
-  const incomeAccountId = (type === 'cart' || type === 'part')
-    ? (WAVE_ACCOUNTS['Golf Cart Sales'] || Object.values(WAVE_ACCOUNTS)[0])
-    : (WAVE_ACCOUNTS['Repair Services'] || Object.values(WAVE_ACCOUNTS)[0]);
-
-  // Search existing products
-  const searchRes = await waveQuery(`
     query($bizId: ID!) {
       business(id: $bizId) {
         products(page: 1, pageSize: 200) {
@@ -944,37 +911,24 @@ async function getOrCreateProduct(name, unitPrice, type) {
         }
       }
     }
-  `, { bizId: WAVE_BIZ_GQL_ID });
-  const products = searchRes?.data?.business?.products?.edges || [];
-  const found = products.find(p => p.node.name.toLowerCase() === name.toLowerCase());
-  if (found) { WAVE_PRODUCTS_CACHE[name] = found.node.id; return found.node.id; }
+  `;
+  const res = await waveQuery(query, { bizId: WAVE_BIZ_GQL_ID });
+  const products = res?.data?.business?.products?.edges || [];
+  console.log('Wave products:', JSON.stringify(products.map(p => p.node.name)));
+  products.forEach(p => {
+    const name = p.node.name.toLowerCase();
+    if (name.includes('non-taxable') || name.includes('labor')) WAVE_PRODUCT_IDS.labor = p.node.id;
+    if (name.includes('golf cart sale')) WAVE_PRODUCT_IDS.cart = p.node.id;
+    if (name.includes('parts') || name.includes('material')) WAVE_PRODUCT_IDS.part = p.node.id;
+  });
+  console.log('Mapped product IDs:', JSON.stringify(WAVE_PRODUCT_IDS));
+}
 
-  // Create product using inline mutation (avoids variable type issues)
-  const safeName = name.replace(/"/g, '\\"');
-  const createRes = await waveQuery(`
-    mutation {
-      productCreate(input: {
-        businessId: "${WAVE_BIZ_GQL_ID}"
-        name: "${safeName}"
-        unitPrice: ${parseFloat(unitPrice.toFixed(2))}
-        isSold: true
-        isBought: false
-        incomeAccountId: "${incomeAccountId}"
-      }) {
-        product { id name }
-        didSucceed
-        inputErrors { message code path }
-      }
-    }
-  `);
-  console.log('Product create result for', name, ':', JSON.stringify(createRes?.data?.productCreate));
-  if (createRes?.data?.productCreate?.didSucceed) {
-    const id = createRes.data.productCreate.product.id;
-    WAVE_PRODUCTS_CACHE[name] = id;
-    return id;
-  }
-  console.error('Product create failed:', JSON.stringify(createRes?.data?.productCreate?.inputErrors), JSON.stringify(createRes?.errors));
-  return null;
+async function loadWaveAccounts() {}
+
+async function getProductId(type) {
+  if (!WAVE_PRODUCT_IDS.labor) await loadWaveProductIds();
+  return WAVE_PRODUCT_IDS[type] || WAVE_PRODUCT_IDS.labor;
 }
 
 async function createWaveInvoice(customerId, lineItems, notes) {
@@ -983,11 +937,11 @@ async function createWaveInvoice(customerId, lineItems, notes) {
 
   const items = [];
   for (const item of lineItems) {
-    const productId = await getOrCreateProduct(item.description, item.unitPrice, item.type);
+    const productId = await getProductId(item.type);
     if (productId) {
-      items.push({ productId, quantity: 1, unitPrice: parseFloat(item.unitPrice.toFixed(2)) });
+      items.push({ productId, quantity: 1, unitPrice: parseFloat(item.unitPrice.toFixed(2)), description: item.description });
     } else {
-      console.error('No product ID for:', item.description);
+      console.error('No product ID for type:', item.type);
     }
   }
 
@@ -1033,8 +987,7 @@ function showToast(msg, type = 'success') {
 
 // ── INIT ──────────────────────────────────────────────
 loadData();
-initWave();
-introspectProductCreate();
+initWave().then(() => loadWaveProductIds());
 renderLaborItems();
 renderPartItems();
 updateTotals();
