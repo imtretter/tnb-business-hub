@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TNB Quote Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --dark: #111214;
+    --panel: #1a1c20;
+    --border: #2a2d33;
+    --accent: #e8b84b;
+    --accent-dim: rgba(232,184,75,0.12);
+    --accent-glow: rgba(232,184,75,0.25);
+    --text: #e8e8e8;
+    --muted: #6b7280;
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.1);
+    --red: #ef4444;
+    --red-dim: rgba(239,68,68,0.1);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96,165,250,0.1);
+    --tax-rate: 0.08375;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 120px;
+  }
+
+  /* NAV */
+  .nav-bar {
+    background: var(--black);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 20px;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-bar::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+  /* HEADER */
+  header {
+    background: var(--dark);
+    border-bottom: 2px solid var(--accent);
+    padding: 18px 20px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo-mark {
+    width: 42px; height: 42px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; color: var(--black); letter-spacing: 1px; flex-shrink: 0;
+  }
+  .header-text h1 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--accent); line-height: 1; }
+  .header-text p { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; }
+
+  /* LAYOUT */
+  .page { max-width: 760px; margin: 0 auto; padding: 20px 16px; }
+
+  /* SECTIONS */
+  .section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    color: var(--accent);
+  }
+  .section-body { padding: 16px; }
+
+  /* FORM ELEMENTS */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+  .form-group { margin-bottom: 12px; }
+  .form-group:last-child { margin-bottom: 0; }
+  .form-group label {
+    display: block; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted); margin-bottom: 5px;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%; background: var(--dark); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; padding: 9px 12px; outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--accent); }
+  .form-group textarea { resize: none; height: 70px; }
+  .form-group select option { background: var(--dark); }
+
+  /* LINE ITEMS */
+  .line-items { display: flex; flex-direction: column; gap: 8px; }
+
+  .line-item {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .li-desc { flex: 1; font-size: 13px; min-width: 0; }
+  .li-desc span { display: block; font-size: 10px; color: var(--muted); margin-top: 2px; font-family: 'DM Mono', monospace; text-transform: uppercase; }
+
+  .li-qty {
+    width: 50px; background: var(--panel); border: 1px solid var(--border);
+    border-radius: 4px; color: var(--text); font-family: 'DM Mono', monospace;
+    font-size: 13px; padding: 5px 8px; outline: none; text-align: center;
+  }
+
+  .li-price {
+    font-family: 'DM Mono', monospace; font-size: 13px;
+    color: var(--accent); width: 70px; text-align: right;
+  }
+
+  .li-tax {
+    display: flex; align-items: center; gap: 4px;
+    font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted);
+    white-space: nowrap; cursor: pointer;
+  }
+  .li-tax input { width: 14px; height: 14px; accent-color: var(--accent); cursor: pointer; }
+  .li-tax.taxed { color: var(--accent); }
+
+  .li-del {
+    background: none; border: none; color: var(--muted);
+    cursor: pointer; font-size: 18px; padding: 0; line-height: 1;
+    transition: color 0.15s; flex-shrink: 0;
+  }
+  .li-del:hover { color: var(--red); }
+
+  /* ADD ITEM ROW */
+  .add-item-row {
+    display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;
+  }
+  .add-item-row select,
+  .add-item-row input {
+    background: var(--dark); border: 1px solid var(--border); border-radius: 6px;
+    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px;
+    padding: 8px 10px; outline: none;
+  }
+  .add-item-row select { flex: 2; min-width: 0; }
+  .add-item-row input { flex: 1; min-width: 80px; }
+  .btn-add {
+    background: var(--accent-dim); border: 1px solid rgba(232,184,75,0.3);
+    color: var(--accent); font-family: 'DM Mono', monospace; font-size: 12px;
+    padding: 8px 14px; border-radius: 6px; cursor: pointer; white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .btn-add:hover { background: var(--accent); color: var(--black); }
+
+  /* CART SELECTOR */
+  .cart-select-wrap { display: flex; gap: 8px; align-items: center; }
+  .cart-select-wrap select { flex: 1; }
+  .cart-preview {
+    background: var(--dark); border: 1px solid var(--border); border-radius: 6px;
+    padding: 10px 12px; margin-top: 10px; display: none;
+  }
+  .cart-preview.visible { display: block; }
+  .cart-preview-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; color: var(--text); }
+  .cart-preview-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .cart-preview-price { font-family: 'DM Mono', monospace; font-size: 16px; color: var(--accent); margin-top: 6px; }
+
+  /* TOTALS */
+  .totals-box {
+    background: var(--dark); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; margin-bottom: 16px;
+  }
+  .total-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; padding: 5px 0; border-bottom: 1px solid var(--border);
+  }
+  .total-row:last-child { border-bottom: none; }
+  .total-row .tr-label { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 12px; }
+  .total-row .tr-val { font-family: 'DM Mono', monospace; font-size: 14px; }
+  .total-row.grand { padding-top: 10px; }
+  .total-row.grand .tr-label { color: var(--text); font-size: 14px; }
+  .total-row.grand .tr-val { color: var(--accent); font-size: 22px; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
+
+  /* ACTIONS */
+  .action-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--dark); border-top: 1px solid var(--border);
+    padding: 14px 20px; display: flex; gap: 10px; z-index: 100;
+    max-width: 760px; margin: 0 auto;
+  }
+
+  /* Fix action bar centering */
+  .action-bar-wrap {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--dark); border-top: 1px solid var(--border);
+    padding: 14px 20px; z-index: 100;
+  }
+  .action-bar-inner { max-width: 760px; margin: 0 auto; display: flex; gap: 10px; }
+
+  .btn-preview {
+    flex: 1; background: var(--panel); border: 1px solid var(--border);
+    color: var(--text); font-family: 'Bebas Neue', sans-serif; font-size: 18px;
+    letter-spacing: 1px; padding: 12px; border-radius: 6px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-preview:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-wave {
+    flex: 2; background: var(--accent); border: none; color: var(--black);
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px;
+    padding: 12px; border-radius: 6px; cursor: pointer; transition: opacity 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-wave:hover { opacity: 0.9; }
+  .btn-wave:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* PREVIEW MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 300;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .preview-modal {
+    background: #fff; color: #111; border-radius: 8px;
+    width: 100%; max-width: 600px; max-height: 90vh;
+    overflow-y: auto; padding: 40px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .preview-header { display: flex; justify-content: space-between; margin-bottom: 32px; }
+  .preview-logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px; color: #e8b84b; }
+  .preview-logo span { display: block; font-size: 11px; color: #888; letter-spacing: 2px; margin-top: 2px; font-family: 'DM Sans', sans-serif; font-weight: normal; }
+  .preview-meta { text-align: right; font-size: 12px; color: #666; }
+  .preview-meta strong { display: block; font-size: 18px; color: #111; font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; }
+
+  .preview-bill { margin-bottom: 24px; }
+  .preview-bill h3 { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: #888; margin-bottom: 6px; }
+  .preview-bill p { font-size: 14px; line-height: 1.6; }
+
+  .preview-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 13px; }
+  .preview-table th { text-align: left; padding: 8px 10px; border-bottom: 2px solid #e8b84b; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #888; }
+  .preview-table td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+  .preview-table td:last-child { text-align: right; }
+  .preview-table th:last-child { text-align: right; }
+  .preview-table .tax-badge { font-size: 9px; background: #fff3cd; color: #856404; padding: 1px 5px; border-radius: 3px; margin-left: 4px; }
+
+  .preview-totals { margin-left: auto; width: 240px; }
+  .preview-total-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 13px; border-bottom: 1px solid #eee; }
+  .preview-total-row.grand { font-weight: 600; font-size: 16px; border-bottom: none; padding-top: 8px; }
+  .preview-total-row .pt-label { color: #666; }
+
+  .preview-notes { margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee; font-size: 12px; color: #666; }
+  .preview-notes strong { color: #111; display: block; margin-bottom: 4px; }
+
+  .preview-footer { margin-top: 32px; text-align: center; font-size: 11px; color: #aaa; border-top: 1px solid #eee; padding-top: 16px; }
+
+  .preview-close-btn {
+    background: var(--dark); border: 1px solid var(--border); color: var(--text);
+    font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1px;
+    padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 16px;
+    width: 100%;
+  }
+
+  /* STATUS TOAST */
+  .toast {
+    position: fixed; top: 20px; right: 20px; z-index: 500;
+    background: var(--dark); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 16px; font-size: 13px;
+    font-family: 'DM Mono', monospace; display: none;
+    animation: fadeIn 0.2s ease;
+    max-width: 300px;
+  }
+  .toast.show { display: block; }
+  .toast.success { border-color: var(--green); color: var(--green); }
+  .toast.error { border-color: var(--red); color: var(--red); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* EMPTY LINE ITEMS */
+  .no-items { font-size: 13px; color: var(--muted); font-style: italic; padding: 8px 0; }
+
+  @media (max-width: 480px) {
+    .form-row, .form-row.three { grid-template-columns: 1fr; }
+    .preview-modal { padding: 24px 16px; }
+    .preview-header { flex-direction: column; gap: 12px; }
+    .preview-meta { text-align: left; }
+    .preview-totals { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav-bar">
+  <a class="nav-btn" href="./index.html">🏠 Hub</a>
+  <a class="nav-btn" href="./tnb-labor-rate-card.html">🔧 Labor Rate Card</a>
+  <a class="nav-btn" href="./golf-cart-tracker.html">🛻 Cart Tracker</a>
+  <a class="nav-btn active" href="./tnb-quote-generator.html">📋 Quote Generator</a>
+</nav>
+
+<header>
+  <div class="logo-mark">TNB</div>
+  <div class="header-text">
+    <h1>Quote Generator</h1>
+    <p>Tretter No Better · Wave Integration</p>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- CUSTOMER INFO -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Customer Info</div>
+    </div>
+    <div class="section-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="custFirst" placeholder="John">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="custLast" placeholder="Smith">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="custEmail" placeholder="john@example.com">
+        </div>
+        <div class="form-group">
+          <label>Phone <span style="color:var(--muted);font-size:10px;text-transform:none;letter-spacing:0;">— add manually in Wave after sending</span></label>
+          <input type="tel" id="custPhone" placeholder="(707) 555-0100">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART PURCHASE (optional) -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Cart Purchase</div>
+      <span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;">Optional</span>
+    </div>
+    <div class="section-body">
+      <div class="cart-select-wrap">
+        <select id="cartSelect">
+          <option value="">— No cart sale, service only —</option>
+        </select>
+      </div>
+      <div class="cart-preview" id="cartPreview">
+        <div class="cart-preview-name" id="cartPreviewName"></div>
+        <div class="cart-preview-meta" id="cartPreviewMeta"></div>
+        <div class="cart-preview-price" id="cartPreviewPrice"></div>
+        <div style="margin-top:8px;">
+          <label style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px;">Sale Price ($) <span style="color:var(--accent)">*</span></label>
+          <input type="number" id="cartSalePrice" placeholder="Override sale price..." min="0" step="0.01" style="background:var(--dark);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;padding:8px 12px;outline:none;width:100%;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LABOR TASKS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Labor</div>
+      <span style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;">Non-taxable unless new build</span>
+    </div>
+    <div class="section-body">
+      <div class="line-items" id="laborItems"></div>
+      <div class="add-item-row">
+        <select id="laborSelect">
+          <option value="">— Select task from rate card —</option>
+        </select>
+        <button class="btn-add" onclick="addLaborItem()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PARTS & MATERIALS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Parts & Materials</div>
+      <span style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;">Taxable</span>
+    </div>
+    <div class="section-body">
+      <div class="line-items" id="partsItems"></div>
+      <div class="add-item-row">
+        <input type="text" id="partDesc" placeholder="Part description...">
+        <input type="number" id="partPrice" placeholder="Price" min="0" step="0.01" style="max-width:100px;">
+        <button class="btn-add" onclick="addPartItem()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Notes / Terms</div>
+    </div>
+    <div class="section-body">
+      <div class="form-group">
+        <textarea id="quoteNotes" placeholder="Quote valid for 30 days. 50% deposit required to schedule work. Parts are non-refundable once ordered."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOTALS -->
+  <div class="totals-box">
+    <div class="total-row">
+      <span class="tr-label">Cart Sale</span>
+      <span class="tr-val" id="totCart">$0.00</span>
+    </div>
+    <div class="total-row">
+      <span class="tr-label">Labor (Non-Taxable)</span>
+      <span class="tr-val" id="totLabor">$0.00</span>
+    </div>
+    <div class="total-row">
+      <span class="tr-label">Parts & Materials</span>
+      <span class="tr-val" id="totParts">$0.00</span>
+    </div>
+    <div class="total-row">
+      <span class="tr-label">Taxable Labor</span>
+      <span class="tr-val" id="totTaxableLabor">$0.00</span>
+    </div>
+    <div class="total-row">
+      <span class="tr-label">Subtotal</span>
+      <span class="tr-val" id="totSubtotal">$0.00</span>
+    </div>
+    <div class="total-row">
+      <span class="tr-label">Sales Tax (8.375%)</span>
+      <span class="tr-val" id="totTax">$0.00</span>
+    </div>
+    <div class="total-row grand">
+      <span class="tr-label">TOTAL</span>
+      <span class="tr-val" id="totGrand">$0.00</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- ACTION BAR -->
+<div class="action-bar-wrap">
+  <div class="action-bar-inner">
+    <button class="btn-preview" onclick="openPreview()">👁 Preview</button>
+    <button class="btn-wave" id="waveBtn" onclick="pushToWave()">
+      <span id="waveBtnText">Send to Wave →</span>
+    </button>
+  </div>
+</div>
+
+<!-- PREVIEW MODAL -->
+<div class="modal-overlay" id="previewOverlay">
+  <div style="width:100%;max-width:640px;display:flex;flex-direction:column;gap:10px;">
+    <div class="preview-modal" id="previewContent"></div>
+    <button class="preview-close-btn" onclick="closePreview()">Close Preview</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA63bdlg0GaEQYQPSpDqhp9XEga-wkqiFY",
+  authDomain: "tnb-golf-carts.firebaseapp.com",
+  projectId: "tnb-golf-carts",
+  storageBucket: "tnb-golf-carts.firebasestorage.app",
+  messagingSenderId: "447050777531",
+  appId: "1:447050777531:web:e96f83be1f8160abf33a9e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ── WAVE CONFIG ───────────────────────────────────────
+const WAVE_TOKEN = "DxsR8F7vzV7GmVNUesLm427l0JHDCh";
+const WAVE_BIZ_ID = "a4ce60d8-8c18-475e-90f5-7592d183827b";
+const TAX_RATE = 0.08375;
+
+// ── STATE ─────────────────────────────────────────────
+let tasks = [];
+let carts = [];
+let laborLines = [];
+let partLines = [];
+let selectedCart = null;
+
+// ── LOAD DATA ─────────────────────────────────────────
+async function loadData() {
+  // Load tasks
+  const taskSnap = await getDocs(collection(db, "tasks"));
+  tasks = taskSnap.docs.map(d => d.data()).sort((a,b) => a.name.localeCompare(b.name));
+  const laborSel = document.getElementById('laborSelect');
+  tasks.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = `${t.name} — ${t.hours}hr ($${(t.hours * 65).toFixed(0)})`;
+    laborSel.appendChild(opt);
+  });
+
+  // Load carts
+  const cartSnap = await getDocs(collection(db, "carts"));
+  carts = cartSnap.docs.map(d => d.data()).filter(c => c.status === 'available');
+  const cartSel = document.getElementById('cartSelect');
+  carts.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = `${c.name} — ${[c.year, c.make, c.model].filter(Boolean).join(' ')} (Est. $${c.estValue || 0})`;
+    cartSel.appendChild(opt);
+  });
+}
+
+// ── CART SELECTION ────────────────────────────────────
+document.getElementById('cartSelect').addEventListener('change', function() {
+  const id = parseInt(this.value);
+  selectedCart = carts.find(c => c.id === id) || null;
+  const preview = document.getElementById('cartPreview');
+  if (selectedCart) {
+    preview.classList.add('visible');
+    document.getElementById('cartPreviewName').textContent = selectedCart.name;
+    document.getElementById('cartPreviewMeta').textContent = [selectedCart.year, selectedCart.make, selectedCart.model].filter(Boolean).join(' · ');
+    document.getElementById('cartPreviewPrice').textContent = `Estimated value: $${(selectedCart.estValue || 0).toFixed(2)}`;
+    document.getElementById('cartSalePrice').value = selectedCart.estValue || '';
+  } else {
+    preview.classList.remove('visible');
+    selectedCart = null;
+  }
+  updateTotals();
+});
+
+document.getElementById('cartSalePrice').addEventListener('input', updateTotals);
+
+// ── LABOR ITEMS ───────────────────────────────────────
+window.addLaborItem = function() {
+  const sel = document.getElementById('laborSelect');
+  const taskId = parseInt(sel.value);
+  if (!taskId) { showToast('Select a task first.', 'error'); return; }
+  const task = tasks.find(t => t.id === taskId);
+  if (!task) return;
+  laborLines.push({ id: Date.now(), name: task.name, hours: task.hours, price: task.hours * 65, taxable: false });
+  sel.value = '';
+  renderLaborItems();
+  updateTotals();
+};
+
+window.removeLaborItem = function(id) {
+  laborLines = laborLines.filter(l => l.id !== id);
+  renderLaborItems();
+  updateTotals();
+};
+
+window.toggleLaborTax = function(id) {
+  const item = laborLines.find(l => l.id === id);
+  if (item) item.taxable = !item.taxable;
+  renderLaborItems();
+  updateTotals();
+};
+
+function renderLaborItems() {
+  const el = document.getElementById('laborItems');
+  if (laborLines.length === 0) { el.innerHTML = '<div class="no-items">No labor tasks added yet.</div>'; return; }
+  el.innerHTML = laborLines.map(l => `
+    <div class="line-item">
+      <div class="li-desc">${l.name}<span>${l.hours} hr${l.hours !== 1 ? 's' : ''} @ $65/hr</span></div>
+      <label class="li-tax ${l.taxable ? 'taxed' : ''}" onclick="toggleLaborTax(${l.id})">
+        <input type="checkbox" ${l.taxable ? 'checked' : ''} onclick="event.preventDefault()"> Tax
+      </label>
+      <div class="li-price">$${l.price.toFixed(2)}</div>
+      <button class="li-del" onclick="removeLaborItem(${l.id})">×</button>
+    </div>
+  `).join('');
+}
+
+// ── PARTS ITEMS ───────────────────────────────────────
+window.addPartItem = function() {
+  const desc = document.getElementById('partDesc').value.trim();
+  const price = parseFloat(document.getElementById('partPrice').value) || 0;
+  if (!desc) { showToast('Enter a part description.', 'error'); return; }
+  if (price <= 0) { showToast('Enter a valid price.', 'error'); return; }
+  partLines.push({ id: Date.now(), name: desc, price, taxable: true });
+  document.getElementById('partDesc').value = '';
+  document.getElementById('partPrice').value = '';
+  renderPartItems();
+  updateTotals();
+};
+
+window.removePartItem = function(id) {
+  partLines = partLines.filter(p => p.id !== id);
+  renderPartItems();
+  updateTotals();
+};
+
+function renderPartItems() {
+  const el = document.getElementById('partsItems');
+  if (partLines.length === 0) { el.innerHTML = '<div class="no-items">No parts added yet.</div>'; return; }
+  el.innerHTML = partLines.map(p => `
+    <div class="line-item">
+      <div class="li-desc">${p.name}<span>Taxable</span></div>
+      <div class="li-price">$${p.price.toFixed(2)}</div>
+      <button class="li-del" onclick="removePartItem(${p.id})">×</button>
+    </div>
+  `).join('');
+}
+
+// ── TOTALS ────────────────────────────────────────────
+function updateTotals() {
+  const cartTotal = selectedCart ? (parseFloat(document.getElementById('cartSalePrice').value) || 0) : 0;
+  const laborNonTax = laborLines.filter(l => !l.taxable).reduce((s,l) => s + l.price, 0);
+  const laborTax = laborLines.filter(l => l.taxable).reduce((s,l) => s + l.price, 0);
+  const partsTotal = partLines.reduce((s,p) => s + p.price, 0);
+  const taxable = cartTotal + laborTax + partsTotal;
+  const tax = taxable * TAX_RATE;
+  const subtotal = cartTotal + laborNonTax + laborTax + partsTotal;
+  const grand = subtotal + tax;
+
+  document.getElementById('totCart').textContent = '$' + cartTotal.toFixed(2);
+  document.getElementById('totLabor').textContent = '$' + laborNonTax.toFixed(2);
+  document.getElementById('totTaxableLabor').textContent = '$' + laborTax.toFixed(2);
+  document.getElementById('totParts').textContent = '$' + partsTotal.toFixed(2);
+  document.getElementById('totSubtotal').textContent = '$' + subtotal.toFixed(2);
+  document.getElementById('totTax').textContent = '$' + tax.toFixed(2);
+  document.getElementById('totGrand').textContent = '$' + grand.toFixed(2);
+}
+
+// ── PREVIEW ───────────────────────────────────────────
+window.openPreview = function() {
+  const first = document.getElementById('custFirst').value.trim();
+  const last = document.getElementById('custLast').value.trim();
+  const email = document.getElementById('custEmail').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  const notes = document.getElementById('quoteNotes').value.trim();
+  const cartTotal = selectedCart ? (parseFloat(document.getElementById('cartSalePrice').value) || 0) : 0;
+  const laborNonTax = laborLines.filter(l => !l.taxable).reduce((s,l) => s + l.price, 0);
+  const laborTax = laborLines.filter(l => l.taxable).reduce((s,l) => s + l.price, 0);
+  const partsTotal = partLines.reduce((s,p) => s + p.price, 0);
+  const taxable = cartTotal + laborTax + partsTotal;
+  const tax = taxable * TAX_RATE;
+  const subtotal = cartTotal + laborNonTax + laborTax + partsTotal;
+  const grand = subtotal + tax;
+  const quoteNum = 'TNB-' + Date.now().toString().slice(-6);
+  const today = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+
+  const allLines = [
+    ...(selectedCart ? [{ name: selectedCart.name + ' — ' + [selectedCart.year, selectedCart.make, selectedCart.model].filter(Boolean).join(' '), price: cartTotal, taxable: true, type: 'Cart Sale' }] : []),
+    ...laborLines.map(l => ({ ...l, type: 'Labor' })),
+    ...partLines.map(p => ({ ...p, type: 'Parts' }))
+  ];
+
+  document.getElementById('previewContent').innerHTML = `
+    <div class="preview-header">
+      <div>
+        <div class="preview-logo">Tretter No Better<span>Veteran Owned · Family Operated · Vacaville, CA</span></div>
+        <div style="font-size:12px;color:#666;margin-top:4px;">info@tnbgolfcarts.com</div>
+      </div>
+      <div class="preview-meta">
+        <strong>QUOTE</strong>
+        ${quoteNum}<br>${today}<br>
+        <span style="color:#e8b84b;font-weight:600;">Valid 30 days</span>
+      </div>
+    </div>
+    <div class="preview-bill">
+      <h3>Bill To</h3>
+      <p><strong>${first || 'Customer'} ${last}</strong><br>${email || ''}${email && phone ? '<br>' : ''}${phone || ''}</p>
+    </div>
+    <table class="preview-table">
+      <thead><tr><th>Description</th><th>Type</th><th>Amount</th></tr></thead>
+      <tbody>
+        ${allLines.map(l => `
+          <tr>
+            <td>${l.name}${l.taxable ? '<span class="tax-badge">TAX</span>' : ''}</td>
+            <td style="color:#888">${l.type}</td>
+            <td>$${l.price.toFixed(2)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div class="preview-totals">
+      <div class="preview-total-row"><span class="pt-label">Subtotal</span><span>$${subtotal.toFixed(2)}</span></div>
+      <div class="preview-total-row"><span class="pt-label">Sales Tax (8.375%)</span><span>$${tax.toFixed(2)}</span></div>
+      <div class="preview-total-row grand"><span class="pt-label">Total</span><span>$${grand.toFixed(2)}</span></div>
+    </div>
+    ${notes ? `<div class="preview-notes"><strong>Notes / Terms</strong>${notes}</div>` : ''}
+    <div class="preview-footer">Tretter No Better LLC · Vacaville, CA 95687 · info@tnbgolfcarts.com</div>
+  `;
+  document.getElementById('previewOverlay').classList.add('open');
+};
+
+window.closePreview = function() {
+  document.getElementById('previewOverlay').classList.remove('open');
+};
+
+// ── WAVE INTEGRATION ──────────────────────────────────
+window.pushToWave = async function() {
+  const first = document.getElementById('custFirst').value.trim();
+  const last = document.getElementById('custLast').value.trim();
+  const email = document.getElementById('custEmail').value.trim();
+
+  if (!first && !last) { showToast('Enter a customer name.', 'error'); return; }
+
+  const btn = document.getElementById('waveBtn');
+  const btnText = document.getElementById('waveBtnText');
+  btn.disabled = true;
+  btnText.textContent = 'Connecting to Wave...';
+
+  try {
+    // Step 1: Find or create customer
+    let customerId = await findOrCreateCustomer(first, last, email);
+    if (!customerId) throw new Error('Could not create customer in Wave.');
+
+    btnText.textContent = 'Creating invoice...';
+
+    // Step 2: Build line items
+    const cartTotal = selectedCart ? (parseFloat(document.getElementById('cartSalePrice').value) || 0) : 0;
+    const notes = document.getElementById('quoteNotes').value.trim();
+
+    const lineItems = [];
+
+    if (selectedCart && cartTotal > 0) {
+      lineItems.push({
+        description: selectedCart.name + ' — ' + [selectedCart.year, selectedCart.make, selectedCart.model].filter(Boolean).join(' '),
+        quantity: "1",
+        unitPrice: cartTotal.toFixed(2),
+        taxable: true
+      });
+    }
+
+    laborLines.forEach(l => {
+      lineItems.push({
+        description: l.name + ` (${l.hours} hr${l.hours !== 1 ? 's' : ''})`,
+        quantity: "1",
+        unitPrice: l.price.toFixed(2),
+        taxable: l.taxable
+      });
+    });
+
+    partLines.forEach(p => {
+      lineItems.push({
+        description: p.name,
+        quantity: "1",
+        unitPrice: p.price.toFixed(2),
+        taxable: true
+      });
+    });
+
+    // Step 3: Create invoice in Wave
+    const invoiceResult = await createWaveInvoice(customerId, lineItems, notes);
+
+    if (invoiceResult.success) {
+      showToast('✓ Draft invoice created in Wave!', 'success');
+      btnText.textContent = '✓ Sent to Wave!';
+      setTimeout(() => {
+        btn.disabled = false;
+        btnText.textContent = 'Send to Wave →';
+      }, 4000);
+    } else {
+      throw new Error(invoiceResult.error || 'Wave API error.');
+    }
+
+  } catch (err) {
+    showToast('Wave error: ' + err.message, 'error');
+    btn.disabled = false;
+    btnText.textContent = 'Send to Wave →';
+  }
+};
+
+async function waveQuery(query, variables = {}) {
+  const resp = await fetch('https://gql.waveapps.com/graphql/public', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${WAVE_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ query, variables })
+  });
+  return resp.json();
+}
+
+async function findOrCreateCustomer(first, last, email) {
+  // Search existing customers
+  const searchQuery = `
+    query($bizId: ID!) {
+      business(id: $bizId) {
+        customers(page: 1, pageSize: 50) {
+          edges { node { id name } }
+        }
+      }
+    }
+  `;
+  const fullName = `${first} ${last}`.trim();
+  const searchRes = await waveQuery(searchQuery, { bizId: WAVE_BIZ_ID });
+  const existing = searchRes?.data?.business?.customers?.edges?.find(e => e.node.name === fullName);
+  if (existing) return existing.node.id;
+
+  // Create new customer
+  const createMutation = `
+    mutation($input: CustomerCreateInput!) {
+      customerCreate(input: $input) {
+        customer { id name }
+        didSucceed
+        inputErrors { message }
+      }
+    }
+  `;
+  const createRes = await waveQuery(createMutation, {
+    input: {
+      businessId: WAVE_BIZ_ID,
+      name: fullName,
+      ...(email ? { email } : {})
+    }
+  });
+  if (createRes?.data?.customerCreate?.didSucceed) {
+    return createRes.data.customerCreate.customer.id;
+  }
+  return null;
+}
+
+async function createWaveInvoice(customerId, lineItems, notes) {
+  const today = new Date().toISOString().split('T')[0];
+  const due = new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0];
+
+  const mutation = `
+    mutation($input: InvoiceCreateInput!) {
+      invoiceCreate(input: $input) {
+        invoice { id invoiceNumber pdfUrl }
+        didSucceed
+        inputErrors { message path }
+      }
+    }
+  `;
+
+  const input = {
+    businessId: WAVE_BIZ_ID,
+    customerId,
+    status: "DRAFT",
+    invoiceDate: today,
+    dueDate: due,
+    memo: notes || "Thank you for your business! — Tretter No Better LLC",
+    items: lineItems.map(item => ({
+      description: item.description,
+      quantity: parseFloat(item.quantity),
+      unitPrice: parseFloat(item.unitPrice),
+      taxable: item.taxable
+    }))
+  };
+
+  const res = await waveQuery(mutation, { input });
+  if (res?.data?.invoiceCreate?.didSucceed) {
+    return { success: true, invoice: res.data.invoiceCreate.invoice };
+  }
+  const errors = res?.data?.invoiceCreate?.inputErrors?.map(e => e.message).join(', ');
+  return { success: false, error: errors || JSON.stringify(res?.errors) };
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast show ${type}`;
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// ── INIT ──────────────────────────────────────────────
+loadData();
+renderLaborItems();
+renderPartItems();
+updateTotals();
+</script>
+</body>
+</html>
