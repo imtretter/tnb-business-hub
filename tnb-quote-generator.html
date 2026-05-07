@@ -898,13 +898,31 @@ async function findOrCreateCustomer(first, last, email) {
   throw new Error('Customer creation failed: ' + (errors || JSON.stringify(createRes?.errors)));
 }
 
-async function getOrCreateProduct(name, unitPrice, isTaxable) {
-  // Search for existing product
+async function getIncomeAccountId() {
+  const query = `
+    query($bizId: ID!) {
+      business(id: $bizId) {
+        accounts(subtypes: [INCOME]) {
+          edges { node { id name subtype { name } } }
+        }
+      }
+    }
+  `;
+  const res = await waveQuery(query, { bizId: WAVE_BIZ_GQL_ID });
+  console.log('Accounts:', JSON.stringify(res?.data?.business?.accounts?.edges?.map(e => e.node.name)));
+  const accounts = res?.data?.business?.accounts?.edges || [];
+  // Prefer "Sales" or first income account
+  const sales = accounts.find(a => a.node.name.toLowerCase().includes('sales') || a.node.name.toLowerCase().includes('services'));
+  return (sales || accounts[0])?.node?.id || null;
+}
+
+async function getOrCreateProduct(name, unitPrice) {
+  // Search existing products
   const query = `
     query($bizId: ID!) {
       business(id: $bizId) {
         products(page: 1, pageSize: 200) {
-          edges { node { id name defaultUnitAmount isSold } }
+          edges { node { id name } }
         }
       }
     }
@@ -912,7 +930,11 @@ async function getOrCreateProduct(name, unitPrice, isTaxable) {
   const res = await waveQuery(query, { bizId: WAVE_BIZ_GQL_ID });
   const products = res?.data?.business?.products?.edges || [];
   const existing = products.find(p => p.node.name.toLowerCase() === name.toLowerCase());
-  if (existing) return existing.node.id;
+  if (existing) { console.log('Found product:', existing.node.id, name); return existing.node.id; }
+
+  // Get income account
+  const incomeAccountId = await getIncomeAccountId();
+  if (!incomeAccountId) { console.error('No income account found'); return null; }
 
   // Create product
   const mutation = `
@@ -920,7 +942,7 @@ async function getOrCreateProduct(name, unitPrice, isTaxable) {
       productCreate(input: $input) {
         product { id name }
         didSucceed
-        inputErrors { message }
+        inputErrors { message code }
       }
     }
   `;
@@ -928,14 +950,17 @@ async function getOrCreateProduct(name, unitPrice, isTaxable) {
     input: {
       businessId: WAVE_BIZ_GQL_ID,
       name,
-      unitPrice: unitPrice.toFixed(2),
+      unitPrice: parseFloat(unitPrice.toFixed(2)),
       isSold: true,
-      isBought: false
+      isBought: false,
+      incomeAccountId
     }
   });
+  console.log('Product create result:', JSON.stringify(createRes?.data?.productCreate));
   if (createRes?.data?.productCreate?.didSucceed) {
     return createRes.data.productCreate.product.id;
   }
+  console.error('Product create failed:', JSON.stringify(createRes?.data?.productCreate?.inputErrors));
   return null;
 }
 
