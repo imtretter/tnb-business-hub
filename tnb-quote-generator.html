@@ -884,7 +884,9 @@ async function findOrCreateCustomer(first, last, email) {
       }
     }
   `;
-  const createInput = { businessId: WAVE_BIZ_GQL_ID, name: fullName, ...(email ? { email } : {}) };
+  const createInput = { businessId: WAVE_BIZ_GQL_ID, name: fullName };
+  // Only include email if it looks valid
+  if (email && email.includes('@') && email.includes('.')) createInput.email = email;
   console.log('Creating customer:', JSON.stringify(createInput));
   const createRes = await waveQuery(createMutation, { input: createInput });
   console.log('Create response:', JSON.stringify(createRes));
