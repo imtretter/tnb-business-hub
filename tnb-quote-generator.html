@@ -827,6 +827,7 @@ window.pushToWave = async function() {
     }
 
   } catch (err) {
+    console.error('Wave error:', err);
     showToast('Wave error: ' + err.message, 'error');
     btn.disabled = false;
     btnText.textContent = 'Send to Wave →';
@@ -858,6 +859,7 @@ async function findOrCreateCustomer(first, last, email) {
   `;
   const fullName = `${first} ${last}`.trim();
   const searchRes = await waveQuery(searchQuery, { bizId: WAVE_BIZ_ID });
+  console.log('Wave search response:', JSON.stringify(searchRes));
   const existing = searchRes?.data?.business?.customers?.edges?.find(e => e.node.name === fullName);
   if (existing) return existing.node.id;
 
@@ -867,21 +869,23 @@ async function findOrCreateCustomer(first, last, email) {
       customerCreate(input: $input) {
         customer { id name }
         didSucceed
-        inputErrors { message }
+        inputErrors { message code }
       }
     }
   `;
-  const createRes = await waveQuery(createMutation, {
-    input: {
-      businessId: WAVE_BIZ_ID,
-      name: fullName,
-      ...(email ? { email } : {})
-    }
-  });
+  const createInput = {
+    businessId: WAVE_BIZ_ID,
+    name: fullName,
+    ...(email ? { email } : {})
+  };
+  console.log('Creating customer with input:', JSON.stringify(createInput));
+  const createRes = await waveQuery(createMutation, { input: createInput });
+  console.log('Wave create response:', JSON.stringify(createRes));
   if (createRes?.data?.customerCreate?.didSucceed) {
     return createRes.data.customerCreate.customer.id;
   }
-  return null;
+  const errors = createRes?.data?.customerCreate?.inputErrors?.map(e => `${e.code}: ${e.message}`).join(', ');
+  throw new Error('Customer creation failed: ' + (errors || JSON.stringify(createRes?.errors)));
 }
 
 async function createWaveInvoice(customerId, lineItems, notes) {
