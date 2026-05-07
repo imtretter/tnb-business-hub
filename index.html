@@ -399,9 +399,36 @@
 </style>
 </head>
 <body>
+<script>
+(function() {
+  const PASS = "1234qwer";
+  const KEY = "tnb_auth";
+  if (sessionStorage.getItem(KEY) !== PASS) {
+    const overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;inset:0;background:#0a0a0a;z-index:99999;display:flex;align-items:center;justify-content:center;font-family:DM Sans,sans-serif;";
+    overlay.innerHTML = `<div style="text-align:center;padding:40px 24px;max-width:360px;width:100%;"><div style="font-family:Bebas Neue,cursive;font-size:48px;letter-spacing:4px;color:#e8b84b;line-height:1;">TNB</div><div style="font-size:11px;color:#6b7280;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px;">Business Hub · Private Access</div><input id="tnb-pw" type="password" placeholder="Enter password..." style="width:100%;background:#1a1c20;border:1px solid #2a2d33;border-radius:6px;color:#e8e8e8;font-size:16px;padding:12px 16px;outline:none;text-align:center;letter-spacing:2px;margin-bottom:12px;"><button id="tnb-go" style="width:100%;background:#e8b84b;border:none;color:#0a0a0a;font-family:Bebas Neue,cursive;font-size:20px;letter-spacing:2px;padding:12px;border-radius:6px;cursor:pointer;">Enter</button><div id="tnb-err" style="color:#ef4444;font-size:12px;margin-top:10px;font-family:DM Mono,monospace;display:none;">Incorrect password. Try again.</div></div>`;
+    document.body.appendChild(overlay);
+    function tryLogin() {
+      if (document.getElementById("tnb-pw").value === PASS) {
+        sessionStorage.setItem(KEY, PASS);
+        overlay.remove();
+      } else {
+        document.getElementById("tnb-err").style.display = "block";
+        document.getElementById("tnb-pw").value = "";
+        document.getElementById("tnb-pw").focus();
+      }
+    }
+    document.getElementById("tnb-go").addEventListener("click", tryLogin);
+    document.getElementById("tnb-pw").addEventListener("keydown", e => { if(e.key === "Enter") tryLogin(); });
+    document.getElementById("tnb-pw").focus();
+  }
+})();
+</script>
 <nav class="nav-bar">
   <a class="nav-btn active" href="./index.html">🏠 Hub</a>
   <a class="nav-btn" href="./tnb-labor-rate-card.html">🔧 Labor Rate Card</a>
+  <a class="nav-btn" href="./golf-cart-tracker.html">🛻 Cart Tracker</a>
+  <a class="nav-btn active" href="./tnb-quote-generator.html">📋 Quote Generator</a>
   <a class="nav-btn" href="./golf-cart-tracker.html">🛻 Cart Tracker</a>
 </nav>
 <div class="wrap">
@@ -461,6 +488,25 @@
         <span class="feature-tag">Parts log</span>
         <span class="feature-tag">Cost analysis</span>
         <span class="feature-tag">Firebase sync</span>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="tool-card" href="./tnb-quote-generator.html">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <div class="card-meta">
+          <div class="card-title">Quote Generator</div>
+          <div class="card-category">Quoting & Invoicing</div>
+        </div>
+        <div class="card-badge badge-live">● Live</div>
+      </div>
+      <p class="card-desc">Build quotes from your labor rate card and cart inventory, then push draft invoices directly to Wave. Customer profiles created automatically.</p>
+      <div class="card-features">
+        <span class="feature-tag">Wave integration</span>
+        <span class="feature-tag">Auto tax calc</span>
+        <span class="feature-tag">Cart & labor pull</span>
+        <span class="feature-tag">PDF preview</span>
       </div>
       <div class="card-arrow">→</div>
     </a>
