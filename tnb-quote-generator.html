@@ -846,8 +846,24 @@ async function waveQuery(query, variables = {}) {
   return resp.json();
 }
 
+let WAVE_BIZ_GQL_ID = null; // Will be fetched on init
+
+async function initWave() {
+  // Fetch the proper GQL business ID
+  const query = `{ businesses { edges { node { id name } } } }`;
+  const res = await waveQuery(query);
+  console.log('Wave businesses:', JSON.stringify(res));
+  const biz = res?.data?.businesses?.edges?.find(e =>
+    e.node.name.toLowerCase().includes('tretter')
+  ) || res?.data?.businesses?.edges?.[0];
+  if (biz) {
+    WAVE_BIZ_GQL_ID = biz.node.id;
+    console.log('Wave biz GQL ID:', WAVE_BIZ_GQL_ID);
+  }
+}
+
 async function findOrCreateCustomer(first, last, email) {
-  // Search existing customers
+  if (!WAVE_BIZ_GQL_ID) throw new Error('Wave business not initialized.');
   const searchQuery = `
     query($bizId: ID!) {
       business(id: $bizId) {
@@ -858,12 +874,11 @@ async function findOrCreateCustomer(first, last, email) {
     }
   `;
   const fullName = `${first} ${last}`.trim();
-  const searchRes = await waveQuery(searchQuery, { bizId: WAVE_BIZ_ID });
-  console.log('Wave search response:', JSON.stringify(searchRes));
+  const searchRes = await waveQuery(searchQuery, { bizId: WAVE_BIZ_GQL_ID });
+  console.log('Customer search:', JSON.stringify(searchRes));
   const existing = searchRes?.data?.business?.customers?.edges?.find(e => e.node.name === fullName);
-  if (existing) return existing.node.id;
+  if (existing) { console.log('Found existing customer:', existing.node.id); return existing.node.id; }
 
-  // Create new customer
   const createMutation = `
     mutation($input: CustomerCreateInput!) {
       customerCreate(input: $input) {
@@ -873,14 +888,10 @@ async function findOrCreateCustomer(first, last, email) {
       }
     }
   `;
-  const createInput = {
-    businessId: WAVE_BIZ_ID,
-    name: fullName,
-    ...(email ? { email } : {})
-  };
-  console.log('Creating customer with input:', JSON.stringify(createInput));
+  const createInput = { businessId: WAVE_BIZ_GQL_ID, name: fullName, ...(email ? { email } : {}) };
+  console.log('Creating customer:', JSON.stringify(createInput));
   const createRes = await waveQuery(createMutation, { input: createInput });
-  console.log('Wave create response:', JSON.stringify(createRes));
+  console.log('Create response:', JSON.stringify(createRes));
   if (createRes?.data?.customerCreate?.didSucceed) {
     return createRes.data.customerCreate.customer.id;
   }
@@ -903,7 +914,7 @@ async function createWaveInvoice(customerId, lineItems, notes) {
   `;
 
   const input = {
-    businessId: WAVE_BIZ_ID,
+    businessId: WAVE_BIZ_GQL_ID,
     customerId,
     status: "DRAFT",
     invoiceDate: today,
@@ -935,6 +946,7 @@ function showToast(msg, type = 'success') {
 
 // ── INIT ──────────────────────────────────────────────
 loadData();
+initWave();
 renderLaborItems();
 renderPartItems();
 updateTotals();
