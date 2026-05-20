@@ -6,694 +6,679 @@
 <title>TNB Golf Carts — Rental Contract</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --black: #080809;
-    --dark: #0f1012;
-    --panel: #16181c;
-    --border: #252830;
-    --accent: #e8b84b;
-    --accent-dim: rgba(232,184,75,0.1);
-    --accent-glow: rgba(232,184,75,0.2);
-    --text: #e4e4e6;
-    --muted: #5a6075;
-    --green: #4ade80;
-    --gold: #e8b84b;
-    --gold-light: #f0cc72;
-    --gold-dim: #a07c28;
-    --border-gold: #3a2e10;
-    --text-muted: #5a6075;
-  }
+:root {
+--black: #080809;
+--dark: #0f1012;
+--panel: #16181c;
+--border: #252830;
+--accent: #e8b84b;
+--accent-dim: rgba(232,184,75,0.1);
+--accent-glow: rgba(232,184,75,0.2);
+--text: #e4e4e6;
+--muted: #5a6075;
+--green: #4ade80;
+--gold: #e8b84b;
+--gold-light: #f0cc72;
+--gold-dim: #a07c28;
+--border-gold: #3a2e10;
+--text-muted: #5a6075;
+}
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    background: var(--black);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-  }
+body {
+background: var(--black);
+color: var(--text);
+font-family: 'DM Sans', sans-serif;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+overflow-x: hidden;
+}
 
-  /* Grid + noise overlays */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background-image:
-      linear-gradient(rgba(232,184,75,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(232,184,75,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none; z-index: 0;
-  }
-  body::after {
-    content: '';
-    position: fixed; inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 0; opacity: 0.4;
-  }
+body::before {
+content: '';
+position: fixed; inset: 0;
+background-image:
+linear-gradient(rgba(232,184,75,0.03) 1px, transparent 1px),
+linear-gradient(90deg, rgba(232,184,75,0.03) 1px, transparent 1px);
+background-size: 60px 60px;
+pointer-events: none; z-index: 0;
+}
+body::after {
+content: '';
+position: fixed; inset: 0;
+background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+pointer-events: none; z-index: 0; opacity: 0.4;
+}
 
-  /* ── NAV ── */
-  .nav-bar {
-    position: relative; z-index: 10;
-    background: var(--dark);
-    border-bottom: 1px solid var(--border);
-    padding: 8px 20px;
-    display: flex; gap: 8px;
-    overflow-x: auto; scrollbar-width: none;
-    flex-shrink: 0;
-  }
-  .nav-bar::-webkit-scrollbar { display: none; }
-  .nav-btn {
-    display: flex; align-items: center; gap: 6px;
-    background: var(--panel); border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.5px;
-    padding: 6px 12px; border-radius: 4px;
-    text-decoration: none; white-space: nowrap; transition: all 0.15s;
-  }
-  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .nav-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+.nav-bar {
+position: relative; z-index: 10;
+background: var(--dark);
+border-bottom: 1px solid var(--border);
+padding: 8px 20px;
+display: flex; gap: 8px;
+overflow-x: auto; scrollbar-width: none;
+flex-shrink: 0;
+}
+.nav-bar::-webkit-scrollbar { display: none; }
+.nav-btn {
+display: flex; align-items: center; gap: 6px;
+background: var(--panel); border: 1px solid var(--border);
+color: var(--muted);
+font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.5px;
+padding: 6px 12px; border-radius: 4px;
+text-decoration: none; white-space: nowrap; transition: all 0.15s;
+}
+.nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+.nav-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
-  /* ── TOOL HEADER ── */
-  #tool-header {
-    position: relative; z-index: 5;
-    background: var(--dark);
-    border-bottom: 1px solid var(--border);
-    padding: 10px 20px;
-    display: flex; align-items: center; gap: 14px;
-    flex-shrink: 0;
-  }
-  .tool-icon {
-    width: 36px; height: 36px;
-    background: var(--accent-dim); border: 1px solid rgba(232,184,75,0.2);
-    border-radius: 6px; display: flex; align-items: center;
-    justify-content: center; font-size: 16px; flex-shrink: 0;
-  }
-  .tool-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--text); line-height: 1; }
-  .tool-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 1px; margin-top: 2px; }
-  .header-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+#tool-header {
+position: relative; z-index: 5;
+background: var(--dark);
+border-bottom: 1px solid var(--border);
+padding: 10px 20px;
+display: flex; align-items: center; gap: 14px;
+flex-shrink: 0;
+}
+.tool-icon {
+width: 36px; height: 36px;
+background: var(--accent-dim); border: 1px solid rgba(232,184,75,0.2);
+border-radius: 6px; display: flex; align-items: center;
+justify-content: center; font-size: 16px; flex-shrink: 0;
+}
+.tool-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--text); line-height: 1; }
+.tool-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); letter-spacing: 1px; margin-top: 2px; }
+.header-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 
-  .btn {
-    font-family: 'DM Mono', monospace; font-weight: 500; font-size: 11px;
-    border-radius: 4px; padding: 7px 16px; cursor: pointer;
-    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
-    letter-spacing: 0.5px; border: none; white-space: nowrap; transition: opacity 0.15s;
-  }
-  .btn:hover { opacity: 0.85; }
-  .btn-gold { background: var(--accent); color: var(--black); font-weight: 700; }
-  .btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
-  .btn-wave { background: #1a5c3a; border: 1px solid #2a7a50; color: #4ade80; }
-  #email-btn { display: none; }
+.btn {
+font-family: 'DM Mono', monospace; font-weight: 500; font-size: 11px;
+border-radius: 4px; padding: 7px 16px; cursor: pointer;
+text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+letter-spacing: 0.5px; border: none; white-space: nowrap; transition: opacity 0.15s;
+}
+.btn:hover { opacity: 0.85; }
+.btn-gold { background: var(--accent); color: var(--black); font-weight: 700; }
+.btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+.btn-wave { background: #1a5c3a; border: 1px solid #2a7a50; color: #4ade80; }
+#email-btn { display: none; }
 
-  /* ── MAIN LAYOUT ── */
-  #main {
-    display: flex; flex: 1; min-height: 0;
-    position: relative; z-index: 1;
-  }
+#main {
+display: flex; flex: 1; min-height: 0;
+position: relative; z-index: 1;
+}
 
-  /* ── FORM PANEL ── */
-  #form-panel {
-    width: 300px; min-width: 300px;
-    background: var(--panel);
-    padding: 16px 14px;
-    overflow-y: auto;
-    border-right: 1px solid var(--border);
-    height: calc(100vh - 106px);
-    position: sticky;
-    top: 106px;
-  }
+#form-panel {
+width: 300px; min-width: 300px;
+background: var(--panel);
+padding: 16px 14px;
+overflow-y: auto;
+border-right: 1px solid var(--border);
+height: calc(100vh - 106px);
+position: sticky;
+top: 106px;
+}
 
-  .section-head {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px; color: var(--accent);
-    text-transform: uppercase; letter-spacing: 2px;
-    border-bottom: 1px solid var(--border-gold);
-    padding-bottom: 5px; margin-bottom: 12px; margin-top: 20px;
-  }
-  .section-head:first-child { margin-top: 4px; }
+.section-head {
+font-family: 'DM Mono', monospace;
+font-size: 10px; color: var(--accent);
+text-transform: uppercase; letter-spacing: 2px;
+border-bottom: 1px solid var(--border-gold);
+padding-bottom: 5px; margin-bottom: 12px; margin-top: 20px;
+}
+.section-head:first-child { margin-top: 4px; }
 
-  .field { margin-bottom: 10px; }
-  .field label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 1px;
-    display: block; margin-bottom: 3px;
-  }
-  .field input, .field select, .field textarea {
-    font-family: 'DM Mono', monospace;
-    background: var(--black); border: 1px solid var(--border);
-    color: var(--text); border-radius: 4px;
-    padding: 7px 9px; font-size: 12px; width: 100%;
-    outline: none; transition: border-color 0.15s;
-  }
-  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
-  .field input::placeholder { color: #2a2d36; }
-  .field select option { background: var(--black); }
-  .field textarea { resize: vertical; height: 56px; }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-  .grid-211 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 6px; }
+.field { margin-bottom: 10px; }
+.field label {
+font-family: 'DM Mono', monospace;
+font-size: 10px; color: var(--muted);
+text-transform: uppercase; letter-spacing: 1px;
+display: block; margin-bottom: 3px;
+}
+.field input, .field select, .field textarea {
+font-family: 'DM Mono', monospace;
+background: var(--black); border: 1px solid var(--border);
+color: var(--text); border-radius: 4px;
+padding: 7px 9px; font-size: 12px; width: 100%;
+outline: none; transition: border-color 0.15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+.field input::placeholder { color: #2a2d36; }
+.field select option { background: var(--black); }
+.field textarea { resize: vertical; height: 56px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.grid-211 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 6px; }
 
-  #total-box {
-    background: var(--black); border: 1px solid var(--border-gold);
-    border-radius: 4px; padding: 10px 12px; margin: 6px 0 8px;
-  }
-  #total-box .t-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-  #total-box .t-amount { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--accent); letter-spacing: 1px; line-height: 1.1; }
-  #total-box .t-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
+#total-box {
+background: var(--black); border: 1px solid var(--border-gold);
+border-radius: 4px; padding: 10px 12px; margin: 6px 0 8px;
+}
+#total-box .t-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+#total-box .t-amount { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--accent); letter-spacing: 1px; line-height: 1.1; }
+#total-box .t-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
 
-  /* ── Delivery Calculator ── */
-  #delivery-calc {
-    background: var(--black); border: 1px solid var(--border-gold);
-    border-radius: 4px; padding: 11px 12px; margin-bottom: 8px;
-  }
-  #delivery-calc .calc-title {
-    font-family: 'DM Mono', monospace; font-size: 10px;
-    color: var(--gold-light); text-transform: uppercase; letter-spacing: 1px;
-    margin-bottom: 8px;
-  }
-  #calc-result {
-    margin-top: 8px; padding: 9px 10px;
-    background: var(--panel); border-radius: 4px;
-    border: 1px solid var(--border); display: none;
-  }
-  .r-miles { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
-  .r-fee { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--accent); letter-spacing: 1px; }
-  .r-breakdown { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
-  .r-tier { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--green); margin-top: 2px; }
-  #apply-fee-btn {
-    margin-top: 7px; width: 100%; padding: 6px;
-    background: var(--accent); color: var(--black);
-    border: none; border-radius: 4px;
-    font-family: 'DM Mono', monospace; font-weight: 500; font-size: 11px;
-    cursor: pointer; letter-spacing: 0.5px;
-  }
-  #apply-fee-btn:hover { opacity: 0.85; }
-  #calc-error { font-family: 'DM Mono', monospace; font-size: 10px; color: #f87171; margin-top: 6px; display: none; }
-  #calc-loading { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 6px; display: none; }
-  .tier-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
-  .tier-table td { font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 3px; color: var(--muted); }
-  .tier-table td:last-child { text-align: right; color: var(--accent); }
-  .tier-table tr.active-tier td { color: var(--gold-light) !important; font-weight: 500; }
-  #calc-btn {
-    width: 100%; padding: 7px; margin-top: 7px;
-    background: var(--panel); color: var(--accent);
-    border: 1px solid var(--border); border-radius: 4px;
-    font-family: 'DM Mono', monospace; font-size: 11px;
-    cursor: pointer; letter-spacing: 0.5px; transition: border-color 0.15s;
-  }
-  #calc-btn:hover { border-color: var(--accent); }
+#delivery-calc {
+background: var(--black); border: 1px solid var(--border-gold);
+border-radius: 4px; padding: 11px 12px; margin-bottom: 8px;
+}
+#delivery-calc .calc-title {
+font-family: 'DM Mono', monospace; font-size: 10px;
+color: var(--gold-light); text-transform: uppercase; letter-spacing: 1px;
+margin-bottom: 8px;
+}
+#calc-result {
+margin-top: 8px; padding: 9px 10px;
+background: var(--panel); border-radius: 4px;
+border: 1px solid var(--border); display: none;
+}
+.r-miles { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+.r-fee { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--accent); letter-spacing: 1px; }
+.r-breakdown { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 2px; }
+.r-tier { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--green); margin-top: 2px; }
+#apply-fee-btn {
+margin-top: 7px; width: 100%; padding: 6px;
+background: var(--accent); color: var(--black);
+border: none; border-radius: 4px;
+font-family: 'DM Mono', monospace; font-weight: 500; font-size: 11px;
+cursor: pointer; letter-spacing: 0.5px;
+}
+#apply-fee-btn:hover { opacity: 0.85; }
+#calc-error { font-family: 'DM Mono', monospace; font-size: 10px; color: #f87171; margin-top: 6px; display: none; }
+#calc-loading { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 6px; display: none; }
+.tier-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+.tier-table td { font-family: 'DM Mono', monospace; font-size: 10px; padding: 2px 3px; color: var(--muted); }
+.tier-table td:last-child { text-align: right; color: var(--accent); }
+.tier-table tr.active-tier td { color: var(--gold-light) !important; font-weight: 500; }
+#calc-btn {
+width: 100%; padding: 7px; margin-top: 7px;
+background: var(--panel); color: var(--accent);
+border: 1px solid var(--border); border-radius: 4px;
+font-family: 'DM Mono', monospace; font-size: 11px;
+cursor: pointer; letter-spacing: 0.5px; transition: border-color 0.15s;
+}
+#calc-btn:hover { border-color: var(--accent); }
 
-  /* ── PREVIEW PANEL ── */
-  #preview-panel {
-    flex: 1; background: #111318;
-    padding: 24px 20px; overflow-y: auto;
-  }
+#preview-panel {
+flex: 1; background: #111318;
+padding: 24px 20px; overflow-y: auto;
+}
 
-  /* ── CONTRACT (print-ready white doc) ── */
-  #contract {
-    max-width: 760px; margin: 0 auto;
-    background: white; color: #1a1a1a;
-    padding: 48px 56px;
-    box-shadow: 0 4px 40px rgba(0,0,0,0.7);
-    font-family: 'Georgia', serif; font-size: 11px; line-height: 1.6;
-  }
+#contract {
+max-width: 760px; margin: 0 auto;
+background: white; color: #1a1a1a;
+padding: 48px 56px;
+box-shadow: 0 4px 40px rgba(0,0,0,0.7);
+font-family: 'Georgia', serif; font-size: 11px; line-height: 1.6;
+}
 
-  .c-letterhead { text-align: center; border-bottom: 3px solid #080809; padding-bottom: 16px; margin-bottom: 20px; }
-  .c-letterhead h1 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 4px; color: #080809; line-height: 1; }
-  .c-letterhead .sub1 { font-size: 9px; color: #666; letter-spacing: 0.16em; text-transform: uppercase; margin-top: 3px; }
-  .c-letterhead .sub2 { font-size: 9px; color: #888; margin-top: 3px; font-family: 'DM Mono', monospace; }
-  .c-badge { display: inline-block; background: #e8b84b; color: #080809; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 14px; border-radius: 2px; margin-top: 10px; font-family: 'DM Mono', monospace; }
-  .c-date { font-size: 10px; color: #666; margin-top: 6px; font-family: 'DM Mono', monospace; }
+.c-letterhead { text-align: center; border-bottom: 3px solid #080809; padding-bottom: 16px; margin-bottom: 20px; }
+.c-letterhead h1 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 4px; color: #080809; line-height: 1; }
+.c-letterhead .sub1 { font-size: 9px; color: #666; letter-spacing: 0.16em; text-transform: uppercase; margin-top: 3px; }
+.c-letterhead .sub2 { font-size: 9px; color: #888; margin-top: 3px; font-family: 'DM Mono', monospace; }
+.c-badge { display: inline-block; background: #e8b84b; color: #080809; font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 14px; border-radius: 2px; margin-top: 10px; font-family: 'DM Mono', monospace; }
+.c-date { font-size: 10px; color: #666; margin-top: 6px; font-family: 'DM Mono', monospace; }
 
-  .c-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 18px; background: #f9f7f2; padding: 13px 16px; border-radius: 3px; border: 1px solid #e8e0cc; }
-  .c-party-label { font-size: 8px; font-weight: 700; color: #a07c28; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; font-family: 'DM Mono', monospace; }
-  .c-party-name { font-weight: 700; font-size: 11px; }
-  .c-party-detail { color: #555; font-size: 10px; font-family: 'DM Mono', monospace; }
+.c-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 18px; background: #f9f7f2; padding: 13px 16px; border-radius: 3px; border: 1px solid #e8e0cc; }
+.c-party-label { font-size: 8px; font-weight: 700; color: #a07c28; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; font-family: 'DM Mono', monospace; }
+.c-party-name { font-weight: 700; font-size: 11px; }
+.c-party-detail { color: #555; font-size: 10px; font-family: 'DM Mono', monospace; }
 
-  .c-summary { background: #f9f7f2; border: 1px solid #e8e0cc; border-radius: 3px; padding: 13px 16px; margin-bottom: 18px; }
-  .c-summary-label { font-size: 8px; font-weight: 700; color: #a07c28; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 9px; font-family: 'DM Mono', monospace; }
-  .c-summary table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  .c-summary td { padding-bottom: 3px; }
-  .c-summary .td-label { color: #555; width: 40%; font-family: 'DM Mono', monospace; font-size: 10px; }
-  .c-summary .td-val { font-weight: 600; }
-  .c-divider { border-top: 1px solid #e0d4b0; margin-top: 10px; padding-top: 9px; }
-  .c-summary .td-right { text-align: right; font-family: 'DM Mono', monospace; }
-  .c-summary .td-total { font-weight: 700; font-size: 12px; padding-top: 5px; border-top: 1px solid #e0d4b0; }
-  .c-pay-note { font-size: 9px; color: #888; margin-top: 5px; font-family: 'DM Mono', monospace; }
+.c-summary { background: #f9f7f2; border: 1px solid #e8e0cc; border-radius: 3px; padding: 13px 16px; margin-bottom: 18px; }
+.c-summary-label { font-size: 8px; font-weight: 700; color: #a07c28; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 9px; font-family: 'DM Mono', monospace; }
+.c-summary table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.c-summary td { padding-bottom: 3px; }
+.c-summary .td-label { color: #555; width: 40%; font-family: 'DM Mono', monospace; font-size: 10px; }
+.c-summary .td-val { font-weight: 600; }
+.c-divider { border-top: 1px solid #e0d4b0; margin-top: 10px; padding-top: 9px; }
+.c-summary .td-right { text-align: right; font-family: 'DM Mono', monospace; }
+.c-summary .td-total { font-weight: 700; font-size: 12px; padding-top: 5px; border-top: 1px solid #e0d4b0; }
+.c-pay-note { font-size: 9px; color: #888; margin-top: 5px; font-family: 'DM Mono', monospace; }
 
-  .c-section { margin-bottom: 14px; }
-  .c-section-title { font-size: 8px; font-weight: 700; color: #a07c28; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; font-family: 'DM Mono', monospace; }
-  .c-section-body { color: #2a2a2a; font-size: 11px; line-height: 1.7; }
-  .c-section-body ol { padding-left: 16px; line-height: 1.9; }
+.c-section { margin-bottom: 14px; }
+.c-section-title { font-size: 8px; font-weight: 700; color: #a07c28; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; font-family: 'DM Mono', monospace; }
+.c-section-body { color: #2a2a2a; font-size: 11px; line-height: 1.7; }
+.c-section-body ol { padding-left: 16px; line-height: 1.9; }
 
-  .c-initial { display: flex; align-items: center; gap: 10px; background: #fdf8ee; border: 1px solid #d4b86a; border-radius: 3px; padding: 6px 13px; margin: 8px 0 14px; }
-  .c-initial-box { width: 52px; height: 24px; border: 1px solid #bbb; border-radius: 2px; background: white; }
-  .c-initial-label { font-size: 9px; color: #777; font-family: 'DM Mono', monospace; }
+.c-initial { display: flex; align-items: center; gap: 10px; background: #fdf8ee; border: 1px solid #d4b86a; border-radius: 3px; padding: 6px 13px; margin: 8px 0 14px; }
+.c-initial-box { width: 52px; height: 24px; border: 1px solid #bbb; border-radius: 2px; background: white; }
+.c-initial-label { font-size: 9px; color: #777; font-family: 'DM Mono', monospace; }
 
-  .c-cc-box { margin-top: 10px; background: #fdf8ee; border: 1px solid #e0d4b0; border-radius: 3px; padding: 9px 13px; }
-  .c-cc-warning { font-size: 8px; color: #b45c00; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 7px; font-family: 'DM Mono', monospace; }
-  .c-cc-box table { width: 100%; font-size: 10px; font-family: 'DM Mono', monospace; }
-  .c-cc-box td { padding-bottom: 3px; }
+.c-cc-box { margin-top: 10px; background: #fdf8ee; border: 1px solid #e0d4b0; border-radius: 3px; padding: 9px 13px; }
+.c-cc-warning { font-size: 8px; color: #b45c00; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 7px; font-family: 'DM Mono', monospace; }
+.c-cc-box table { width: 100%; font-size: 10px; font-family: 'DM Mono', monospace; }
+.c-cc-box td { padding-bottom: 3px; }
 
-  .c-sigs { margin-top: 24px; border-top: 2px solid #080809; padding-top: 18px; }
-  .c-sigs-title { font-size: 8px; font-weight: 700; color: #a07c28; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; font-family: 'DM Mono', monospace; }
-  .c-sigs-note { font-size: 10px; color: #666; margin-bottom: 16px; }
-  .c-sigs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; }
-  .c-sig-label { font-size: 8px; font-weight: 700; color: #a07c28; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 7px; font-family: 'DM Mono', monospace; }
-  .c-sig-line { border-bottom: 1px solid #999; height: 30px; margin-bottom: 4px; }
-  .c-sig-name { font-size: 10px; color: #555; font-family: 'DM Mono', monospace; }
-  .c-sig-date { font-size: 10px; color: #555; margin-top: 3px; font-family: 'DM Mono', monospace; }
+.c-ins-field { margin-top: 8px; background: #fff8ee; border: 1px solid #e8b84b; border-radius: 3px; padding: 9px 13px; font-family: 'DM Mono', monospace; font-size: 10px; }
+.c-ins-field .ins-warn { font-size: 8px; font-weight: 700; color: #a07c28; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.c-ins-field table { width: 100%; }
+.c-ins-field td { padding-bottom: 3px; }
 
-  .c-footer { margin-top: 24px; border-top: 1px solid #e0d4b0; padding-top: 9px; text-align: center; font-size: 9px; color: #aaa; font-family: 'DM Mono', monospace; }
+.c-sigs { margin-top: 24px; border-top: 2px solid #080809; padding-top: 18px; }
+.c-sigs-title { font-size: 8px; font-weight: 700; color: #a07c28; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; font-family: 'DM Mono', monospace; }
+.c-sigs-note { font-size: 10px; color: #666; margin-bottom: 16px; }
+.c-sigs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; }
+.c-sig-label { font-size: 8px; font-weight: 700; color: #a07c28; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 7px; font-family: 'DM Mono', monospace; }
+.c-sig-line { border-bottom: 1px solid #999; height: 30px; margin-bottom: 4px; }
+.c-sig-name { font-size: 10px; color: #555; font-family: 'DM Mono', monospace; }
+.c-sig-date { font-size: 10px; color: #555; margin-top: 3px; font-family: 'DM Mono', monospace; }
 
-  /* ── Print ── */
-  @media print {
-    body::before, body::after { display: none !important; }
-    .nav-bar, #tool-header { display: none !important; }
-    #main { display: block; }
-    #form-panel { display: none !important; }
-    #preview-panel { background: white !important; padding: 0 !important; overflow: visible !important; }
-    #contract { box-shadow: none !important; padding: 32px 44px !important; max-width: 100% !important; }
-    @page { margin: 0.5in; size: letter; }
-  }
+.c-footer { margin-top: 24px; border-top: 1px solid #e0d4b0; padding-top: 9px; text-align: center; font-size: 9px; color: #aaa; font-family: 'DM Mono', monospace; }
+
+@media print {
+body::before, body::after { display: none !important; }
+.nav-bar, #tool-header { display: none !important; }
+#main { display: block; }
+#form-panel { display: none !important; }
+#preview-panel { background: white !important; padding: 0 !important; overflow: visible !important; }
+#contract { box-shadow: none !important; padding: 32px 44px !important; max-width: 100% !important; }
+@page { margin: 0.5in; size: letter; }
+}
 </style>
 </head>
 <body>
 
-<!-- ── Nav ── -->
 <nav class="nav-bar">
-  <a class="nav-btn" href="./index.html">🏠 Hub</a>
-  <a class="nav-btn" href="./tnb-labor-rate-card.html">🔧 Labor Rate Card</a>
-  <a class="nav-btn" href="./golf-cart-tracker.html">🛻 Cart Tracker</a>
-  <a class="nav-btn" href="./tnb-quote-generator.html">📋 Quote Generator</a>
-  <a class="nav-btn active" href="./tnb-rental-contract.html">📄 Rental Contract</a>
+<a class="nav-btn" href="./index.html">&#127968; Hub</a>
+<a class="nav-btn" href="./tnb-labor-rate-card.html">&#128295; Labor Rate Card</a>
+<a class="nav-btn" href="./golf-cart-tracker.html">&#128667; Cart Tracker</a>
+<a class="nav-btn" href="./tnb-quote-generator.html">&#128203; Quote Generator</a>
+<a class="nav-btn active" href="./tnb-rental-contract.html">&#128196; Rental Contract</a>
 </nav>
 
-<!-- ── Tool Header ── -->
 <div id="tool-header">
-  <div class="tool-icon">📄</div>
-  <div>
-    <div class="tool-title">Rental Contract</div>
-    <div class="tool-sub">Generate · Print · Send</div>
-  </div>
-  <div class="header-actions">
-    <a id="email-btn" href="#" class="btn btn-outline">✉ Email Client</a>
-    <a href="https://my.waveapps.com/invoicing/create" target="_blank" class="btn btn-wave" id="wave-btn">〜 Wave Invoice</a>
-    <button class="btn btn-gold" onclick="window.print()">🖨 Print / PDF</button>
-  </div>
+<div class="tool-icon">&#128196;</div>
+<div>
+<div class="tool-title">Rental Contract</div>
+<div class="tool-sub">Generate &middot; Print &middot; Send</div>
+</div>
+<div class="header-actions">
+<a id="email-btn" href="#" class="btn btn-outline">&#9993; Email Client</a>
+<a href="https://my.waveapps.com/invoicing/create" target="_blank" class="btn btn-wave" id="wave-btn">&#12316; Wave Invoice</a>
+<button class="btn btn-gold" onclick="window.print()">&#128424; Print / PDF</button>
+</div>
 </div>
 
-<!-- ── Main ── -->
 <div id="main">
 
-  <!-- ── Form Panel ── -->
-  <div id="form-panel">
+<div id="form-panel">
 
-    <div class="section-head">📋 Contract</div>
-    <div class="field"><label>Contract Date</label><input type="date" id="contractDate"></div>
+<div class="section-head">&#128203; Contract</div>
+<div class="field"><label>Contract Date</label><input type="date" id="contractDate"></div>
 
-    <div class="section-head">👤 Client</div>
-    <div class="field"><label>Full Name</label><input type="text" id="clientName" placeholder="Jane Smith"></div>
-    <div class="field"><label>Email</label><input type="email" id="clientEmail" placeholder="jane@email.com"></div>
-    <div class="field"><label>Phone</label><input type="text" id="clientPhone" placeholder="(555) 000-0000"></div>
+<div class="section-head">&#128100; Client</div>
+<div class="field"><label>Full Name</label><input type="text" id="clientName" placeholder="Jane Smith"></div>
+<div class="field"><label>Email</label><input type="email" id="clientEmail" placeholder="jane@email.com"></div>
+<div class="field"><label>Phone</label><input type="text" id="clientPhone" placeholder="(555) 000-0000"></div>
 
-    <div class="section-head">🛻 Rental</div>
-    <div class="grid-2">
-      <div class="field"><label># Carts</label>
-        <select id="cartQty">
-          <option>1</option><option>2</option><option>3</option>
-          <option>4</option><option>5</option><option>6</option>
-        </select>
-      </div>
-      <div class="field"><label>Cart Type</label>
-        <select id="cartType">
-          <option>Two Passenger</option>
-          <option selected>Four Passenger</option>
-          <option>Six Passenger</option>
-          <option>Utility</option>
-        </select>
-      </div>
-    </div>
-    <div class="grid-2">
-      <div class="field"><label>Delivery Date</label><input type="date" id="deliveryDate"></div>
-      <div class="field"><label>Delivery Time</label><input type="time" id="deliveryTime" value="12:00"></div>
-    </div>
-    <div class="grid-2">
-      <div class="field"><label>Pickup Date</label><input type="date" id="pickupDate"></div>
-      <div class="field"><label>Pickup Time</label><input type="time" id="pickupTime" value="10:00"></div>
-    </div>
+<div class="section-head">&#128667; Rental</div>
+<div class="grid-2">
+<div class="field"><label># Carts</label>
+<select id="cartQty">
+<option>1</option><option>2</option><option>3</option>
+<option>4</option><option>5</option><option>6</option>
+</select>
+</div>
+<div class="field"><label>Cart Type</label>
+<select id="cartType">
+<option>Two Passenger</option>
+<option selected>Four Passenger</option>
+<option>Six Passenger</option>
+<option>Utility</option>
+</select>
+</div>
+</div>
+<div class="grid-2">
+<div class="field"><label>Delivery Date</label><input type="date" id="deliveryDate"></div>
+<div class="field"><label>Delivery Time</label><input type="time" id="deliveryTime" value="12:00"></div>
+</div>
+<div class="grid-2">
+<div class="field"><label>Pickup Date</label><input type="date" id="pickupDate"></div>
+<div class="field"><label>Pickup Time</label><input type="time" id="pickupTime" value="10:00"></div>
+</div>
 
-    <div class="section-head">📍 Delivery Address</div>
-    <div class="field"><label>Street</label><input type="text" id="deliveryAddress" placeholder="123 Main St"></div>
-    <div class="grid-211">
-      <div class="field"><label>City</label><input type="text" id="deliveryCity" placeholder="Vacaville"></div>
-      <div class="field"><label>State</label><input type="text" id="deliveryState" value="CA"></div>
-      <div class="field"><label>Zip</label><input type="text" id="deliveryZip" placeholder="95688"></div>
-    </div>
+<div class="section-head">&#128205; Delivery Address</div>
+<div class="field"><label>Street</label><input type="text" id="deliveryAddress" placeholder="123 Main St"></div>
+<div class="grid-211">
+<div class="field"><label>City</label><input type="text" id="deliveryCity" placeholder="Vacaville"></div>
+<div class="field"><label>State</label><input type="text" id="deliveryState" value="CA"></div>
+<div class="field"><label>Zip</label><input type="text" id="deliveryZip" placeholder="95688"></div>
+</div>
 
-    <div class="section-head">🚛 Delivery Calculator</div>
-    <div id="delivery-calc">
-      <div class="calc-title">Auto-calc from address above</div>
-      <table class="tier-table" id="tier-table">
-        <tr id="tier-1"><td>0–10 mi (one-way)</td><td>$75</td></tr>
-        <tr id="tier-2"><td>11–20 mi</td><td>$125</td></tr>
-        <tr id="tier-3"><td>21–35 mi</td><td>$175</td></tr>
-        <tr id="tier-4"><td>36–50 mi</td><td>$225</td></tr>
-        <tr id="tier-5"><td>51+ mi</td><td>$300+</td></tr>
-      </table>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;">$1.35/mi round-trip · origin: Vacaville, CA</div>
-      <button id="calc-btn" onclick="calcDelivery()">📐 Calculate Delivery Fee</button>
-      <div id="calc-loading">⏳ Calculating route...</div>
-      <div id="calc-error"></div>
-      <div id="calc-result">
-        <div class="r-miles" id="r-miles-text"></div>
-        <div class="r-fee" id="r-fee-text"></div>
-        <div class="r-breakdown" id="r-breakdown-text"></div>
-        <div class="r-tier" id="r-tier-text"></div>
-        <button id="apply-fee-btn" onclick="applyFee()">✓ Apply to Invoice</button>
-      </div>
-    </div>
+<div class="section-head">&#128666; Delivery Calculator</div>
+<div id="delivery-calc">
+<div class="calc-title">Auto-calc from address above</div>
+<table class="tier-table" id="tier-table">
+<tr id="tier-1"><td>0&#8211;10 mi (one-way)</td><td>$75</td></tr>
+<tr id="tier-2"><td>11&#8211;20 mi</td><td>$125</td></tr>
+<tr id="tier-3"><td>21&#8211;35 mi</td><td>$175</td></tr>
+<tr id="tier-4"><td>36&#8211;50 mi</td><td>$225</td></tr>
+<tr id="tier-5"><td>51+ mi</td><td>$300+</td></tr>
+</table>
+<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:3px;">$1.35/mi round-trip &middot; origin: Vacaville, CA</div>
+<button id="calc-btn" onclick="calcDelivery()">&#128208; Calculate Delivery Fee</button>
+<div id="calc-loading">&#9203; Calculating route...</div>
+<div id="calc-error"></div>
+<div id="calc-result">
+<div class="r-miles" id="r-miles-text"></div>
+<div class="r-fee" id="r-fee-text"></div>
+<div class="r-breakdown" id="r-breakdown-text"></div>
+<div class="r-tier" id="r-tier-text"></div>
+<button id="apply-fee-btn" onclick="applyFee()">&#10003; Apply to Invoice</button>
+</div>
+</div>
 
-    <div class="section-head">💵 Pricing</div>
-    <div class="grid-3">
-      <div class="field"><label>Rental ($)</label><input type="number" id="rentalRate" placeholder="190"></div>
-      <div class="field"><label>Delivery ($)</label><input type="number" id="deliveryFee" placeholder="110"></div>
-      <div class="field"><label>Tax (%)</label><input type="number" id="taxRate" value="8.125" step="0.001"></div>
-    </div>
-    <div class="field"><label>Deposit ($)</label><input type="number" id="depositAmount" placeholder="optional"></div>
+<div class="section-head">&#128181; Pricing</div>
+<div class="grid-3">
+<div class="field"><label>Rental ($)</label><input type="number" id="rentalRate" placeholder="190"></div>
+<div class="field"><label>Delivery ($)</label><input type="number" id="deliveryFee" placeholder="110"></div>
+<div class="field"><label>Tax (%)</label><input type="number" id="taxRate" value="8.125" step="0.001"></div>
+</div>
+<div class="field"><label>Deposit ($)</label><input type="number" id="depositAmount" placeholder="optional"></div>
 
-    <div id="total-box">
-      <div class="t-label">Total Due</div>
-      <div class="t-amount" id="totalDisplay">$0.00</div>
-      <div class="t-sub" id="taxLabel">Includes 8.125% Vacaville sales tax</div>
-    </div>
+<div id="total-box">
+<div class="t-label">Total Due</div>
+<div class="t-amount" id="totalDisplay">$0.00</div>
+<div class="t-sub" id="taxLabel">Includes 8.125% Vacaville sales tax</div>
+</div>
 
-    <div class="section-head">💳 CC on File (Incidentals)</div>
-    <div class="field"><label>Cardholder Name</label><input type="text" id="ccName" placeholder="Jane Smith"></div>
-    <div class="field"><label>Card Number</label><input type="text" id="ccNumber" placeholder="•••• •••• •••• 0000" maxlength="19"></div>
-    <div class="grid-3">
-      <div class="field"><label>Exp.</label><input type="text" id="ccExp" placeholder="MM/YY" maxlength="5"></div>
-      <div class="field"><label>CVV</label><input type="password" id="ccCvv" placeholder="•••" maxlength="4"></div>
-      <div class="field"><label>Billing Zip</label><input type="text" id="ccZip" placeholder="95688" maxlength="5"></div>
-    </div>
+<div class="section-head">&#128736; Insurance (COI)</div>
+<div class="field"><label>Renter Insurance Co.</label><input type="text" id="insCarrier" placeholder="State Farm, USAA..."></div>
+<div class="field"><label>Policy Number</label><input type="text" id="insPolicyNum" placeholder="Policy #"></div>
+<div class="field"><label>Coverage Limit ($)</label><input type="number" id="insCoverage" placeholder="25000"></div>
+<div class="field"><label>COI Received</label>
+<select id="insCoiStatus">
+<option value="">-- Pending --</option>
+<option value="received">&#10003; COI Received</option>
+<option value="waived">Waived (internal)</option>
+</select>
+</div>
 
-    <div class="section-head">📝 Notes</div>
-    <div class="field"><label>Internal Notes (not printed)</label><textarea id="notes" placeholder="gate code, special instructions..."></textarea></div>
+<div class="section-head">&#128179; CC on File (Incidentals)</div>
+<div class="field"><label>Cardholder Name</label><input type="text" id="ccName" placeholder="Jane Smith"></div>
+<div class="field"><label>Card Number</label><input type="text" id="ccNumber" placeholder="0000" maxlength="19"></div>
+<div class="grid-3">
+<div class="field"><label>Exp.</label><input type="text" id="ccExp" placeholder="MM/YY" maxlength="5"></div>
+<div class="field"><label>CVV</label><input type="password" id="ccCvv" placeholder="***" maxlength="4"></div>
+<div class="field"><label>Billing Zip</label><input type="text" id="ccZip" placeholder="95688" maxlength="5"></div>
+</div>
 
-  </div>
+<div class="section-head">&#128221; Notes</div>
+<div class="field"><label>Internal Notes (not printed)</label><textarea id="notes" placeholder="gate code, special instructions..."></textarea></div>
 
-  <!-- ── Preview Panel ── -->
-  <div id="preview-panel">
-    <div id="contract">
+</div>
 
-      <div class="c-letterhead">
-        <h1>TNB GOLF CARTS</h1>
-        <div class="sub1">Tretter No Better LLC · Veteran-Owned &amp; Family-Operated</div>
-        <div class="sub2">tnbgolfcarts.com &nbsp;|&nbsp; (530) 794-8787 &nbsp;|&nbsp; info@tnbgolfcarts.com</div>
-        <div class="c-badge">Golf Cart Rental Agreement &amp; Liability Waiver</div>
-        <div class="c-date">Contract Date: <span id="c-contractDate">___________</span></div>
-      </div>
+<div id="preview-panel">
+<div id="contract">
 
-      <div class="c-parties">
-        <div>
-          <div class="c-party-label">Business</div>
-          <div class="c-party-name">Tretter No Better LLC / TNB Golf Carts</div>
-          <div class="c-party-detail">info@tnbgolfcarts.com · (530) 794-8787</div>
-          <div class="c-party-detail">Vacaville, CA · tnbgolfcarts.com</div>
-        </div>
-        <div>
-          <div class="c-party-label">Client</div>
-          <div class="c-party-name" id="c-clientName">___________________________</div>
-          <div class="c-party-detail" id="c-clientEmail">___________________________</div>
-          <div class="c-party-detail" id="c-clientPhone">___________________________</div>
-        </div>
-      </div>
+<div class="c-letterhead">
+<h1>TNB GOLF CARTS</h1>
+<div class="sub1">Tretter No Better LLC &middot; Veteran-Owned &amp; Family-Operated</div>
+<div class="sub2">tnbgolfcarts.com &nbsp;|&nbsp; (530) 794-8787 &nbsp;|&nbsp; info@tnbgolfcarts.com</div>
+<div class="c-badge">Golf Cart Rental Agreement &amp; Liability Waiver</div>
+<div class="c-date">Contract Date: <span id="c-contractDate">___________</span></div>
+</div>
 
-      <div class="c-summary">
-        <div class="c-summary-label">Rental Summary</div>
-        <table>
-          <tr><td class="td-label">Cart(s):</td><td class="td-val" id="c-carts">—</td></tr>
-          <tr><td class="td-label">Delivery:</td><td id="c-delivery">___________</td></tr>
-          <tr><td class="td-label">Pickup:</td><td id="c-pickup">___________</td></tr>
-          <tr><td class="td-label">Address:</td><td id="c-address">___________________________</td></tr>
-        </table>
-        <div class="c-divider">
-          <table>
-            <tr><td class="td-label">Rental:</td><td class="td-right" id="c-rentalAmt">$0.00</td></tr>
-            <tr><td class="td-label">Delivery Fee:</td><td class="td-right" id="c-deliveryAmt">$0.00</td></tr>
-            <tr><td class="td-label" id="c-taxLabel">Sales Tax (8.125% — Vacaville, CA):</td><td class="td-right" id="c-taxAmt">$0.00</td></tr>
-            <tr id="c-depositRow" style="display:none"><td class="td-label">Security Deposit:</td><td class="td-right" id="c-depositAmt">$0.00</td></tr>
-            <tr><td class="td-total">Total Due:</td><td class="td-right td-total" id="c-total">$0.00</td></tr>
-          </table>
-          <div class="c-pay-note">Payment via Wave invoice (credit card or bank transfer). CC on file for incidentals only. Includes all applicable Vacaville, CA sales tax.</div>
-        </div>
-      </div>
+<div class="c-parties">
+<div>
+<div class="c-party-label">Business</div>
+<div class="c-party-name">Tretter No Better LLC / TNB Golf Carts</div>
+<div class="c-party-detail">info@tnbgolfcarts.com &middot; (530) 794-8787</div>
+<div class="c-party-detail">Vacaville, CA &middot; tnbgolfcarts.com</div>
+</div>
+<div>
+<div class="c-party-label">Client</div>
+<div class="c-party-name" id="c-clientName">___________________________</div>
+<div class="c-party-detail" id="c-clientEmail">___________________________</div>
+<div class="c-party-detail" id="c-clientPhone">___________________________</div>
+</div>
+</div>
 
-      <div class="c-section">
-        <div class="c-section-title">Rental Agreement</div>
-        <div class="c-section-body">This Agreement is entered into between Tretter No Better LLC / TNB Golf Carts ("Owner") and the Client named above ("Renter") as of the contract date above. The golf cart(s) is hereby rented for the agreed-upon times and dates. If Renter retains the property after expiration, such retention constitutes additional rental at the daily rate under the same terms. Renter represents familiarity with the use and operation of said property. Renter shall not sublease or re-rent the equipment. Renter shall return all equipment in the same condition as received. Renter expressly acknowledges personal liability for all costs to repair damages, including Owner's attorney fees incurred in collection.</div>
-      </div>
-      <div class="c-initial"><div class="c-initial-box"></div><span class="c-initial-label">Renter Initials</span></div>
+<div class="c-summary">
+<div class="c-summary-label">Rental Summary</div>
+<table>
+<tr><td class="td-label">Cart(s):</td><td class="td-val" id="c-carts">&#8212;</td></tr>
+<tr><td class="td-label">Delivery:</td><td id="c-delivery">___________</td></tr>
+<tr><td class="td-label">Pickup:</td><td id="c-pickup">___________</td></tr>
+<tr><td class="td-label">Address:</td><td id="c-address">___________________________</td></tr>
+</table>
+<div class="c-divider">
+<table>
+<tr><td class="td-label">Rental:</td><td class="td-right" id="c-rentalAmt">$0.00</td></tr>
+<tr><td class="td-label">Delivery Fee:</td><td class="td-right" id="c-deliveryAmt">$0.00</td></tr>
+<tr><td class="td-label" id="c-taxLabel">Sales Tax (8.125% &#8212; Vacaville, CA):</td><td class="td-right" id="c-taxAmt">$0.00</td></tr>
+<tr id="c-depositRow" style="display:none"><td class="td-label">Security Deposit:</td><td class="td-right" id="c-depositAmt">$0.00</td></tr>
+<tr><td class="td-total">Total Due:</td><td class="td-right td-total" id="c-total">$0.00</td></tr>
+</table>
+<div class="c-pay-note">Payment via Wave invoice (credit card or bank transfer). CC on file for incidentals only. Includes all applicable Vacaville, CA sales tax.</div>
+</div>
+</div>
 
-      <div class="c-section">
-        <div class="c-section-title">Waiver of Liability, Assumption of Risk &amp; Indemnification</div>
-        <div class="c-section-body">In consideration of being permitted to use Owner's golf cart(s), Renter hereby releases, waives, discharges, and covenants not to sue Owner, its members, officers, employees, and agents from any and all liability for claims resulting in personal injury, illness including death, and property loss arising from use of the cart(s). Renter acknowledges that operating a golf cart carries inherent risks ranging from minor injuries to catastrophic injuries including paralysis and death, and accepts sole responsibility for assessing those hazards. Renter agrees to DEFEND, INDEMNIFY, AND HOLD HARMLESS Owner from any and all claims, costs, attorney's fees, and damages arising from Renter's use of the cart(s). This waiver is intended to be as broad and inclusive as permitted by the laws of the State of California. If any portion is held invalid, the remainder shall continue in full legal force.</div>
-      </div>
-      <div class="c-initial"><div class="c-initial-box"></div><span class="c-initial-label">Renter Initials</span></div>
+<div class="c-section">
+<div class="c-section-title">Rental Agreement</div>
+<div class="c-section-body">This Agreement is entered into between Tretter No Better LLC / TNB Golf Carts ("Owner") and the Client named above ("Renter") as of the contract date above. The golf cart(s) is hereby rented for the agreed-upon times and dates. If Renter retains the property after expiration, such retention constitutes additional rental at the daily rate under the same terms. Renter represents familiarity with the use and operation of said property. Renter shall not sublease or re-rent the equipment. Renter shall return all equipment in the same condition as received. Renter expressly acknowledges personal liability for all costs to repair damages, including Owner's attorney fees incurred in collection.</div>
+</div>
+<div class="c-initial"><div class="c-initial-box"></div><span class="c-initial-label">Renter Initials</span></div>
 
-      <div class="c-section">
-        <div class="c-section-title">California Vehicle Code — Operator Requirements</div>
-        <div class="c-section-body">Per California Vehicle Code (CVC §21115 et seq.), golf carts operated on any public road require a valid California driver's license. Operators must be at least 16 years of age to operate on public roads; however, Owner requires operators to be at least <strong>18 years of age</strong> and Renter must be at least <strong>21 years of age</strong>. All operators must comply with California traffic laws. Golf carts as defined under California law (under 1,300 lbs, max 15 mph) are restricted to private property and designated areas unless meeting street-legal LSV/NEV equipment standards. Renter assumes all responsibility for operating the cart in compliance with applicable California and local laws.</div>
-      </div>
-      <div class="c-initial"><div class="c-initial-box"></div><span class="c-initial-label">Renter Initials</span></div>
+<div class="c-section">
+<div class="c-section-title">Waiver of Liability, Assumption of Risk &amp; Indemnification</div>
+<div class="c-section-body">In consideration of being permitted to use Owner's golf cart(s), Renter hereby releases, waives, discharges, and covenants not to sue Owner, its members, officers, employees, and agents from any and all liability for claims resulting in personal injury, illness including death, and property loss arising from use of the cart(s). Renter acknowledges that operating a golf cart carries inherent risks ranging from minor injuries to catastrophic injuries including paralysis and death, and accepts sole responsibility for assessing those hazards. Renter agrees to DEFEND, INDEMNIFY, AND HOLD HARMLESS Owner from any and all claims, costs, attorney's fees, and damages arising from Renter's use of the cart(s). This waiver is intended to be as broad and inclusive as permitted by the laws of the State of California. If any portion is held invalid, the remainder shall continue in full legal force.</div>
+</div>
+<div class="c-initial"><div class="c-initial-box"></div><span class="c-initial-label">Renter Initials</span></div>
 
-      <div class="c-section">
-        <div class="c-section-title">Golf Cart Rules &amp; Regulations</div>
-        <div class="c-section-body">
-          <ol>
-            <li>Renter must be a minimum of <strong>21 years of age</strong> to rent. Operators must be at least <strong>18 years of age</strong> with a valid driver's license in their possession.</li>
-            <li>Use lights after sunset. Turn off cart and lights when not in use to prevent battery drain.</li>
-            <li>No horseplay, racing, off-roading, or other misuse. Do not endanger passengers, pedestrians, or property.</li>
-            <li>Obey all applicable traffic and road laws. Park on level ground; remove key when not in use.</li>
-            <li>Maximum 1 person per seat. Back seat weight limit: 250 lbs. No passengers on footrests.</li>
-            <li>Report any malfunctions immediately to TNB Golf Carts: <strong>(530) 794-8787</strong>.</li>
-            <li>Alcohol is prohibited during cart operation.</li>
-            <li>Gas carts: Premium or Non-Ethanol fuel only. Electric carts: do not overcharge; do not use charger outdoors.</li>
-            <li>In the event of snow or ice accumulation, remove snow from canopy to prevent structural damage.</li>
-          </ol>
-        </div>
-      </div>
-      <div class="c-initial"><div class="c-initial-box"></div><span class="c-initial-label">Renter Initials</span></div>
+<div class="c-section">
+<div class="c-section-title">California Vehicle Code &#8212; Operator Requirements</div>
+<div class="c-section-body">Per California Vehicle Code (CVC &sect;21115 et seq.), golf carts operated on any public road require a valid California driver's license. Operators must be at least 16 years of age to operate on public roads; however, Owner requires operators to be at least <strong>18 years of age</strong> and Renter must be at least <strong>21 years of age</strong>. All operators must comply with California traffic laws. Golf carts as defined under California law (under 1,300 lbs, max 15 mph) are restricted to private property and designated areas unless meeting street-legal LSV/NEV equipment standards. Renter assumes all responsibility for operating the cart in compliance with applicable California and local laws.</div>
+</div>
+<div class="c-initial"><div class="c-initial-box"></div><span class="c-initial-label">Renter Initials</span></div>
 
-      <div class="c-section">
-        <div class="c-section-title">Cancellation Policy</div>
-        <div class="c-section-body"><strong>3+ carts:</strong> Cancellations 14+ days in advance — 100% refund. Less than 14 days — 50% refund. <strong>1–2 carts:</strong> Cancellations 48+ hours in advance — 100% refund. Less than 48 hours — 50% refund. No-shows forfeit full payment. Security deposits, if collected, are refundable upon return of cart(s) in undamaged condition.</div>
-      </div>
+<div class="c-section">
+<div class="c-section-title">Golf Cart Rules &amp; Regulations</div>
+<div class="c-section-body">
+<ol>
+<li>Renter must be a minimum of <strong>21 years of age</strong> to rent. Operators must be at least <strong>18 years of age</strong> with a valid driver's license in their possession.</li>
+<li>Use lights after sunset. Turn off cart and lights when not in use to prevent battery drain.</li>
+<li>No horseplay, racing, off-roading, or other misuse. Do not endanger passengers, pedestrians, or property.</li>
+<li>Obey all applicable traffic and road laws. Park on level ground; remove key when not in use.</li>
+<li>Maximum 1 person per seat. Back seat weight limit: 250 lbs. No passengers on footrests.</li>
+<li>Report any malfunctions immediately to TNB Golf Carts: <strong>(530) 794-8787</strong>.</li>
+<li>Alcohol is prohibited during cart operation.</li>
+<li>Gas carts: Premium or Non-Ethanol fuel only. Electric carts: do not overcharge; do not use charger outdoors.</li>
+<li>In the event of snow or ice accumulation, remove snow from canopy to prevent structural damage.</li>
+</ol>
+</div>
+</div>
+<div class="c-initial"><div class="c-initial-box"></div><span class="c-initial-label">Renter Initials</span></div>
 
-      <div class="c-section">
-        <div class="c-section-title">Payment — Wave Invoice</div>
-        <div class="c-section-body">Primary payment for this rental is processed securely via Wave, TNB Golf Carts' invoicing and payment platform. Renter will receive a Wave invoice by email at the address above prior to or upon delivery. Payment may be made by credit card or bank transfer through the secure Wave payment link. <strong>The credit card provided below is NOT charged for the rental total</strong> — it is held on file for incidental purposes only.</div>
-      </div>
+<div class="c-section">
+<div class="c-section-title">Cancellation Policy</div>
+<div class="c-section-body"><strong>3+ carts:</strong> Cancellations 14+ days in advance &#8212; 100% refund. Less than 14 days &#8212; 50% refund. <strong>1&#8211;2 carts:</strong> Cancellations 48+ hours in advance &#8212; 100% refund. Less than 48 hours &#8212; 50% refund. No-shows forfeit full payment. Security deposits, if collected, are refundable upon return of cart(s) in undamaged condition.</div>
+</div>
 
-      <div class="c-section">
-        <div class="c-section-title">Credit Card Authorization — Incidentals Only</div>
-        <div class="c-section-body">
-          Renter authorizes TNB Golf Carts to retain the credit card information below strictly as a security hold. <strong>This card will not be charged for the rental total, which is invoiced separately via Wave.</strong> Owner is authorized to charge this card only for: (a) damages beyond normal wear; (b) late return fees; (c) excessive cleaning fees; (d) fuel or accessory charges. Renter will be notified before any incidental charge is applied.
-          <div class="c-cc-box">
-            <div class="c-cc-warning">⚠ Incidentals Hold Only — Rental Payment via Wave Invoice</div>
-            <table>
-              <tr><td style="color:#555;width:40%;padding-bottom:3px">Cardholder:</td><td><strong id="c-ccName">___________________________</strong></td></tr>
-              <tr><td style="color:#555;padding-bottom:3px">Card Number:</td><td id="c-ccNumber">**** **** **** ____</td></tr>
-              <tr><td style="color:#555;padding-bottom:3px">Expiration:</td><td id="c-ccExp">__/__</td></tr>
-              <tr><td style="color:#555">Billing Zip:</td><td id="c-ccZip">_____</td></tr>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="c-initial"><div class="c-initial-box"></div><span class="c-initial-label">Renter Initials</span></div>
+<div class="c-section">
+<div class="c-section-title">Insurance Requirement</div>
+<div class="c-section-body">
+Prior to delivery of any rental cart(s), Renter must provide Tretter No Better LLC / TNB Golf Carts with a valid Certificate of Insurance (COI) evidencing a current insurance policy that: (a) names <strong>Tretter No Better LLC / TNB Golf Carts</strong> as an Additional Insured; (b) provides coverage for loss, theft, and/or damage to the rented cart(s) with minimum limits sufficient to cover the full replacement value of the cart(s) rented; and (c) provides coverage for bodily injury and property damage liability arising from Renter's use and operation of the cart(s). <strong>No cart(s) shall be delivered or released to Renter until a satisfactory COI has been received and confirmed by Owner.</strong> Failure to provide a COI prior to the scheduled delivery date shall constitute a cancellation subject to the Cancellation Policy above. Renter acknowledges that Owner carries no insurance covering loss, damage, or liability arising from Renter's possession or operation of the rented cart(s), and that Renter is solely responsible for obtaining and maintaining adequate insurance coverage for the duration of the rental period.
+<div class="c-ins-field">
+<div class="ins-warn">&#128221; COI on File</div>
+<table>
+<tr><td style="color:#555;width:40%;padding-bottom:3px">Insurance Carrier:</td><td><strong id="c-insCarrier">___________________________</strong></td></tr>
+<tr><td style="color:#555;padding-bottom:3px">Policy Number:</td><td id="c-insPolicyNum">___________________________</td></tr>
+<tr><td style="color:#555;padding-bottom:3px">Coverage Limit:</td><td id="c-insCoverage">$___________</td></tr>
+<tr><td style="color:#555">COI Status:</td><td id="c-insStatus" style="font-weight:700">&#9888; Pending</td></tr>
+</table>
+</div>
+</div>
+</div>
+<div class="c-initial"><div class="c-initial-box"></div><span class="c-initial-label">Renter Initials</span></div>
 
-      <div class="c-section">
-        <div class="c-section-title">Governing Law &amp; Dispute Resolution</div>
-        <div class="c-section-body">This Agreement shall be governed by the laws of the State of California. Any disputes shall be subject to the exclusive jurisdiction of the courts of Solano County, California. The prevailing party shall be entitled to recover reasonable attorney's fees. If any provision is found unenforceable, the remainder shall continue in full force.</div>
-      </div>
+<div class="c-section">
+<div class="c-section-title">Payment &#8212; Wave Invoice</div>
+<div class="c-section-body">Primary payment for this rental is processed securely via Wave, TNB Golf Carts' invoicing and payment platform. Renter will receive a Wave invoice by email at the address above prior to or upon delivery. Payment may be made by credit card or bank transfer through the secure Wave payment link. <strong>The credit card provided below is NOT charged for the rental total</strong> &#8212; it is held on file for incidental purposes only.</div>
+</div>
 
-      <div class="c-section">
-        <div class="c-section-title">Entire Agreement</div>
-        <div class="c-section-body">This document constitutes the entire agreement between Owner and Renter. No verbal representations alter this Agreement. Renter confirms receipt of the cart(s) in good working order and acknowledges reading, understanding, and voluntarily agreeing to all terms herein.</div>
-      </div>
+<div class="c-section">
+<div class="c-section-title">Credit Card Authorization &#8212; Incidentals Only</div>
+<div class="c-section-body">
+Renter authorizes TNB Golf Carts to retain the credit card information below strictly as a security hold. <strong>This card will not be charged for the rental total, which is invoiced separately via Wave.</strong> Owner is authorized to charge this card only for: (a) damages beyond normal wear; (b) late return fees; (c) excessive cleaning fees; (d) fuel or accessory charges. Renter will be notified before any incidental charge is applied.
+<div class="c-cc-box">
+<div class="c-cc-warning">&#9888; Incidentals Hold Only &#8212; Rental Payment via Wave Invoice</div>
+<table>
+<tr><td style="color:#555;width:40%;padding-bottom:3px">Cardholder:</td><td><strong id="c-ccName">___________________________</strong></td></tr>
+<tr><td style="color:#555;padding-bottom:3px">Card Number:</td><td id="c-ccNumber">**** **** **** ____</td></tr>
+<tr><td style="color:#555;padding-bottom:3px">Expiration:</td><td id="c-ccExp">__/__</td></tr>
+<tr><td style="color:#555">Billing Zip:</td><td id="c-ccZip">_____</td></tr>
+</table>
+</div>
+</div>
+</div>
+<div class="c-initial"><div class="c-initial-box"></div><span class="c-initial-label">Renter Initials</span></div>
 
-      <div class="c-sigs">
-        <div class="c-sigs-title">Signatures</div>
-        <div class="c-sigs-note">Electronic signatures are valid as original signatures for all purposes. By signing, both parties agree to all terms of this Agreement.</div>
-        <div class="c-sigs-grid">
-          <div>
-            <div class="c-sig-label">Business Signature</div>
-            <div class="c-sig-line"></div>
-            <div class="c-sig-name">Name: <strong>Tretter No Better LLC</strong></div>
-            <div class="c-sig-date">Date: <span id="c-bizDate">__/__/____</span></div>
-          </div>
-          <div>
-            <div class="c-sig-label">Client Signature</div>
-            <div class="c-sig-line"></div>
-            <div class="c-sig-name">Name: <strong id="c-sigName">_________________________</strong></div>
-            <div class="c-sig-date">Date: <span id="c-clientDate">__/__/____</span></div>
-          </div>
-        </div>
-      </div>
+<div class="c-section">
+<div class="c-section-title">Governing Law &amp; Dispute Resolution</div>
+<div class="c-section-body">This Agreement shall be governed by the laws of the State of California. Any disputes shall be subject to the exclusive jurisdiction of the courts of Solano County, California. The prevailing party shall be entitled to recover reasonable attorney's fees. If any provision is found unenforceable, the remainder shall continue in full force.</div>
+</div>
 
-      <div class="c-footer">
-        TNB Golf Carts · Tretter No Better LLC · Vacaville, CA · (530) 794-8787 · tnbgolfcarts.com<br>
-        Veteran-Owned &amp; Family-Operated · Serving Solano County &amp; Beyond
-      </div>
+<div class="c-section">
+<div class="c-section-title">Entire Agreement</div>
+<div class="c-section-body">This document constitutes the entire agreement between Owner and Renter. No verbal representations alter this Agreement. Renter confirms receipt of the cart(s) in good working order and acknowledges reading, understanding, and voluntarily agreeing to all terms herein.</div>
+</div>
 
-    </div>
-  </div>
+<div class="c-sigs">
+<div class="c-sigs-title">Signatures</div>
+<div class="c-sigs-note">Electronic signatures are valid as original signatures for all purposes. By signing, both parties agree to all terms of this Agreement.</div>
+<div class="c-sigs-grid">
+<div>
+<div class="c-sig-label">Business Signature</div>
+<div class="c-sig-line"></div>
+<div class="c-sig-name">Name: <strong>Tretter No Better LLC</strong></div>
+<div class="c-sig-date">Date: <span id="c-bizDate">__/__/____ </span></div>
+</div>
+<div>
+<div class="c-sig-label">Client Signature</div>
+<div class="c-sig-line"></div>
+<div class="c-sig-name">Name: <strong id="c-sigName">_________________________</strong></div>
+<div class="c-sig-date">Date: <span id="c-clientDate">__/__/____</span></div>
+</div>
+</div>
+</div>
+
+<div class="c-footer">
+TNB Golf Carts &middot; Tretter No Better LLC &middot; Vacaville, CA &middot; (530) 794-8787 &middot; tnbgolfcarts.com<br>
+Veteran-Owned &amp; Family-Operated &middot; Serving Solano County &amp; Beyond
+</div>
+
+</div>
+</div>
 </div>
 
 <script>
-  const $ = id => document.getElementById(id);
-  const val = id => $(id) ? $(id).value.trim() : '';
+const $ = id => document.getElementById(id);
+const val = id => $(id) ? $(id).value.trim() : '';
 
-  function fmtDate(d) { if (!d) return '___________'; const [y,m,day]=d.split('-'); return `${m}/${day}/${y}`; }
-  function fmtTime(t) { if (!t) return ''; const [h,min]=t.split(':'); const hr=parseInt(h); return `${hr>12?hr-12:hr||12}:${min} ${hr>=12?'PM':'AM'}`; }
-  function maskCC(n) { const c=n.replace(/\s/g,''); if(!c) return '**** **** **** ____'; return '**** **** **** '+c.slice(-4); }
+function fmtDate(d) { if (!d) return '___________'; const [y,m,day]=d.split('-'); return `${m}/${day}/${y}`; }
+function fmtTime(t) { if (!t) return ''; const [h,min]=t.split(':'); const hr=parseInt(h); return `${hr>12?hr-12:hr||12}:${min} ${hr>=12?'PM':'AM'}`; }
+function maskCC(n) { const c=n.replace(/\s/g,''); if(!c) return '**** **** **** ____'; return '**** **** **** '+c.slice(-4); }
 
-  function calcTotals() {
-    const rental=parseFloat(val('rentalRate'))||0, delivery=parseFloat(val('deliveryFee'))||0;
-    const taxRate=parseFloat(val('taxRate'))||0, deposit=parseFloat(val('depositAmount'))||0;
-    const sub=rental+delivery, taxAmt=sub*(taxRate/100);
-    return { rental, delivery, taxAmt, total: sub+taxAmt, deposit, taxRate };
-  }
+function calcTotals() {
+const rental=parseFloat(val('rentalRate'))||0, delivery=parseFloat(val('deliveryFee'))||0;
+const taxRate=parseFloat(val('taxRate'))||0, deposit=parseFloat(val('depositAmount'))||0;
+const sub=rental+delivery, taxAmt=sub*(taxRate/100);
+return { rental, delivery, taxAmt, total: sub+taxAmt, deposit, taxRate };
+}
 
-  function update() {
-    const { rental, delivery, taxAmt, total, deposit, taxRate } = calcTotals();
-    const cd = fmtDate(val('contractDate'));
-    $('c-contractDate').textContent = cd;
-    $('c-bizDate').textContent = cd;
-    $('c-clientDate').textContent = cd;
-    $('c-clientName').textContent  = val('clientName')  || '___________________________';
-    $('c-clientEmail').textContent = val('clientEmail') || '___________________________';
-    $('c-clientPhone').textContent = val('clientPhone') || '___________________________';
-    $('c-sigName').textContent     = val('clientName')  || '_________________________';
+function update() {
+const { rental, delivery, taxAmt, total, deposit, taxRate } = calcTotals();
+const cd = fmtDate(val('contractDate'));
+$('c-contractDate').textContent = cd;
+$('c-bizDate').textContent = cd;
+$('c-clientDate').textContent = cd;
+$('c-clientName').textContent = val('clientName') || '___________________________';
+$('c-clientEmail').textContent = val('clientEmail') || '___________________________';
+$('c-clientPhone').textContent = val('clientPhone') || '___________________________';
+$('c-sigName').textContent = val('clientName') || '_________________________';
+const qty=val('cartQty')||'1', type=val('cartType')||'Four Passenger';
+$('c-carts').textContent = `${qty} × ${type} Cart${parseInt(qty)>1?'s':''}`;
+const dd=val('deliveryDate'), dt=val('deliveryTime');
+$('c-delivery').textContent = dd ? `${fmtDate(dd)} at ${fmtTime(dt)}` : '___________';
+const pd=val('pickupDate'), pt=val('pickupTime');
+$('c-pickup').textContent = pd ? `${fmtDate(pd)} at ${fmtTime(pt)}` : '___________';
+const addrParts=[val('deliveryAddress'),val('deliveryCity'),val('deliveryState'),val('deliveryZip')].filter(Boolean);
+$('c-address').textContent = addrParts.length ? addrParts.join(', ') : '___________________________';
+$('c-rentalAmt').textContent = `$${rental.toFixed(2)}`;
+$('c-deliveryAmt').textContent = `$${delivery.toFixed(2)}`;
+$('c-taxLabel').textContent = `Sales Tax (${taxRate}% — Vacaville, CA):`;
+$('c-taxAmt').textContent = `$${taxAmt.toFixed(2)}`;
+$('c-total').textContent = `$${total.toFixed(2)}`;
+if (deposit>0) { $('c-depositRow').style.display=''; $('c-depositAmt').textContent=`$${deposit.toFixed(2)}`; }
+else $('c-depositRow').style.display='none';
+$('totalDisplay').textContent = `$${total.toFixed(2)}`;
+$('taxLabel').textContent = `Includes ${taxRate}% Vacaville sales tax`;
+$('c-ccName').textContent = val('ccName') || '___________________________';
+$('c-ccNumber').textContent = maskCC(val('ccNumber'));
+$('c-ccExp').textContent = val('ccExp') || '__/__';
+$('c-ccZip').textContent = val('ccZip') || '_____';
+const carrier=val('insCarrier'), policyNum=val('insPolicyNum'), coverage=val('insCoverage'), coiStatus=val('insCoiStatus');
+$('c-insCarrier').textContent = carrier || '___________________________';
+$('c-insPolicyNum').textContent = policyNum || '___________________________';
+$('c-insCoverage').textContent = coverage ? `$${parseFloat(coverage).toLocaleString()}` : '$___________';
+const statusEl=$('c-insStatus');
+if(coiStatus==='received'){statusEl.textContent='✓ COI Received';statusEl.style.color='#166534';}
+else if(coiStatus==='waived'){statusEl.textContent='Waived (internal)';statusEl.style.color='#555';}
+else{statusEl.textContent='⚠ Pending';statusEl.style.color='#b45c00';}
+const email=val('clientEmail'), emailBtn=$('email-btn');
+if(email){
+const name=val('clientName')||'Client', addrStr=addrParts.join(', ')||'TBD';
+const subj=encodeURIComponent(`TNB Golf Carts Rental Agreement – ${name}`);
+const body=encodeURIComponent(`Hi ${name},\n\nPlease find your TNB Golf Carts rental agreement summary below. A signed PDF will follow.\n\nRental: ${qty} x ${type}\nDelivery: ${dd?fmtDate(dd):'TBD'}\nPickup: ${pd?fmtDate(pd):'TBD'}\nLocation: ${addrStr}\nTotal Due: $${total.toFixed(2)}\n\nPayment via Wave invoice. CC on file for incidentals only.\n\nIMPORTANT: A COI naming Tretter No Better LLC / TNB Golf Carts as Additional Insured is required before delivery. Forward to info@tnbgolfcarts.com.\n\n— Ian Tretter | TNB Golf Carts | (530) 794-8787`);
+emailBtn.href=`mailto:${email}?subject=${subj}&body=${body}`;
+emailBtn.style.display='inline-flex';
+}else{emailBtn.style.display='none';}
+$('wave-btn').title=`Open Wave — ${val('clientName')||'?'} | $${total.toFixed(2)}`;
+}
 
-    const qty=val('cartQty')||'1', type=val('cartType')||'Four Passenger';
-    $('c-carts').textContent = `${qty} × ${type} Cart${parseInt(qty)>1?'s':''}`;
+const TIERS=[{max:10,fee:75,label:'0–10 mi',id:'tier-1'},{max:20,fee:125,label:'11–20 mi',id:'tier-2'},{max:35,fee:175,label:'21–35 mi',id:'tier-3'},{max:50,fee:225,label:'36–50 mi',id:'tier-4'},{max:9999,fee:null,label:'51+ mi',id:'tier-5'}];
+const ORIGIN='Vacaville, CA 95688', RATE_PER_MILE=1.35;
+let suggestedFee=0;
+function getTier(mi){return TIERS.find(t=>mi<=t.max)||TIERS[TIERS.length-1];}
+function highlightTier(id){TIERS.forEach(t=>{const r=document.getElementById(t.id);if(r)r.classList.toggle('active-tier',t.id===id);});}
+async function calcDelivery(){
+const destParts=[val('deliveryAddress'),val('deliveryCity'),val('deliveryState'),val('deliveryZip')].filter(Boolean);
+if(destParts.length<2){showCalcError('Fill in at least city + state above.');return;}
+const dest=destParts.join(', ');
+$('calc-error').style.display='none';$('calc-result').style.display='none';$('calc-loading').style.display='block';$('calc-btn').disabled=true;
+try{
+const [o,d]=await Promise.all([geocode(ORIGIN),geocode(dest)]);
+if(!o||!d)throw new Error('Could not locate address.');
+const meters=await getOSRMDistance(o,d);
+const oneway=meters/1609.34,rt=oneway*2;
+const tier=getTier(oneway);
+const fee=tier.fee!==null?tier.fee:Math.ceil(rt*RATE_PER_MILE/5)*5;
+suggestedFee=fee;highlightTier(tier.id);
+$('r-miles-text').textContent=`One-way: ${oneway.toFixed(1)} mi`;
+$('r-fee-text').textContent=`$${fee.toFixed(2)}`;
+$('r-breakdown-text').textContent=tier.fee!==null?`Flat — ${tier.label}`:`Custom: ${rt.toFixed(1)} mi × $${RATE_PER_MILE}/mi`;
+$('r-tier-text').textContent=`Vacaville → ${dest}`;
+$('calc-result').style.display='block';
+}catch(err){showCalcError(err.message||'Error.');}
+finally{$('calc-loading').style.display='none';$('calc-btn').disabled=false;}
+}
+async function geocode(address){
+const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`,{headers:{'Accept-Language':'en'}});
+const d=await r.json();if(!d.length)return null;return{lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon)};
+}
+async function getOSRMDistance(o,d){
+const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${o.lon},${o.lat};${d.lon},${d.lat}?overview=false`);
+const data=await r.json();if(data.code!=='Ok'||!data.routes.length)throw new Error('Route error.');return data.routes[0].distance;
+}
+function showCalcError(msg){$('calc-error').textContent=msg;$('calc-error').style.display='block';$('calc-loading').style.display='none';$('calc-result').style.display='none';}
+function applyFee(){if(!suggestedFee)return;$('deliveryFee').value=suggestedFee.toFixed(2);update();const el=$('deliveryFee');el.style.borderColor='#e8b84b';setTimeout(()=>{el.style.borderColor='';},1200);}
 
-    const dd=val('deliveryDate'), dt=val('deliveryTime');
-    $('c-delivery').textContent = dd ? `${fmtDate(dd)} at ${fmtTime(dt)}` : '___________';
-    const pd=val('pickupDate'), pt=val('pickupTime');
-    $('c-pickup').textContent = pd ? `${fmtDate(pd)} at ${fmtTime(pt)}` : '___________';
-
-    const addrParts=[val('deliveryAddress'),val('deliveryCity'),val('deliveryState'),val('deliveryZip')].filter(Boolean);
-    $('c-address').textContent = addrParts.length ? addrParts.join(', ') : '___________________________';
-
-    $('c-rentalAmt').textContent  = `$${rental.toFixed(2)}`;
-    $('c-deliveryAmt').textContent = `$${delivery.toFixed(2)}`;
-    $('c-taxLabel').textContent   = `Sales Tax (${taxRate}% — Vacaville, CA):`;
-    $('c-taxAmt').textContent     = `$${taxAmt.toFixed(2)}`;
-    $('c-total').textContent      = `$${total.toFixed(2)}`;
-    if (deposit>0) { $('c-depositRow').style.display=''; $('c-depositAmt').textContent=`$${deposit.toFixed(2)}`; }
-    else $('c-depositRow').style.display='none';
-
-    $('totalDisplay').textContent = `$${total.toFixed(2)}`;
-    $('taxLabel').textContent     = `Includes ${taxRate}% Vacaville sales tax`;
-
-    $('c-ccName').textContent   = val('ccName')   || '___________________________';
-    $('c-ccNumber').textContent = maskCC(val('ccNumber'));
-    $('c-ccExp').textContent    = val('ccExp')    || '__/__';
-    $('c-ccZip').textContent    = val('ccZip')    || '_____';
-
-    const email = val('clientEmail');
-    const emailBtn = $('email-btn');
-    if (email) {
-      const name=val('clientName')||'Client';
-      const addrStr=addrParts.join(', ')||'TBD';
-      const subj=encodeURIComponent(`TNB Golf Carts Rental Agreement – ${name}`);
-      const body=encodeURIComponent(`Hi ${name},\n\nPlease find your TNB Golf Carts rental agreement summary below. A signed PDF will follow.\n\n── RENTAL SUMMARY ──\nCart(s):      ${qty} × ${type}\nDelivery:     ${dd?`${fmtDate(dd)} at ${fmtTime(dt)}`:'TBD'}\nPickup:       ${pd?`${fmtDate(pd)} at ${fmtTime(pt)}`:'TBD'}\nLocation:     ${addrStr}\n\n── PRICING ──\nRental:       $${rental.toFixed(2)}\nDelivery:     $${delivery.toFixed(2)}\nTax(${taxRate}%): $${taxAmt.toFixed(2)}\n${deposit>0?`Deposit:      $${deposit.toFixed(2)}\n`:''}Total Due:    $${total.toFixed(2)}\n\nPayment via secure Wave invoice sent to this email. CC on file for incidentals only.\n\nQuestions? Call or text anytime.\n\n— Ian Tretter | TNB Golf Carts\n📞 (530) 794-8787 | tnbgolfcarts.com\nVeteran-Owned & Family-Operated · Vacaville, CA`);
-      emailBtn.href = `mailto:${email}?subject=${subj}&body=${body}`;
-      emailBtn.style.display = 'inline-flex';
-    } else {
-      emailBtn.style.display = 'none';
-    }
-    $('wave-btn').title = `Open Wave — ${val('clientName')||'?'} | $${total.toFixed(2)}`;
-  }
-
-  // ── Delivery Calculator ──
-  const TIERS = [
-    { max:10,  fee:75,   label:'0–10 mi',  id:'tier-1' },
-    { max:20,  fee:125,  label:'11–20 mi', id:'tier-2' },
-    { max:35,  fee:175,  label:'21–35 mi', id:'tier-3' },
-    { max:50,  fee:225,  label:'36–50 mi', id:'tier-4' },
-    { max:9999,fee:null, label:'51+ mi',   id:'tier-5' },
-  ];
-  const ORIGIN = 'Vacaville, CA 95688';
-  const RATE_PER_MILE = 1.35;
-  let suggestedFee = 0;
-
-  function getTier(mi) { return TIERS.find(t=>mi<=t.max)||TIERS[TIERS.length-1]; }
-  function highlightTier(id) { TIERS.forEach(t=>{ const r=document.getElementById(t.id); if(r) r.classList.toggle('active-tier',t.id===id); }); }
-
-  async function calcDelivery() {
-    const destParts=[val('deliveryAddress'),val('deliveryCity'),val('deliveryState'),val('deliveryZip')].filter(Boolean);
-    if (destParts.length<2) { showCalcError('Fill in at least city + state above.'); return; }
-    const dest=destParts.join(', ');
-    $('calc-error').style.display='none';
-    $('calc-result').style.display='none';
-    $('calc-loading').style.display='block';
-    $('calc-btn').disabled=true;
-    try {
-      const [o,d]=await Promise.all([geocode(ORIGIN),geocode(dest)]);
-      if(!o||!d) throw new Error('Could not locate address. Add more detail.');
-      const meters=await getOSRMDistance(o,d);
-      const oneway=meters/1609.34, rt=oneway*2;
-      const tier=getTier(oneway);
-      const fee=tier.fee!==null ? tier.fee : Math.ceil(rt*RATE_PER_MILE/5)*5;
-      suggestedFee=fee;
-      highlightTier(tier.id);
-      $('r-miles-text').textContent=`One-way: ${oneway.toFixed(1)} mi · Round-trip: ${rt.toFixed(1)} mi`;
-      $('r-fee-text').textContent=`$${fee.toFixed(2)}`;
-      $('r-breakdown-text').textContent=tier.fee!==null?`Flat rate — ${tier.label} tier`:`Custom: ${rt.toFixed(1)} mi × $${RATE_PER_MILE}/mi`;
-      $('r-tier-text').textContent=`Vacaville, CA → ${dest}`;
-      $('calc-result').style.display='block';
-    } catch(err) { showCalcError(err.message||'Could not calculate. Check address.'); }
-    finally { $('calc-loading').style.display='none'; $('calc-btn').disabled=false; }
-  }
-
-  async function geocode(address) {
-    const r=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`,{headers:{'Accept-Language':'en'}});
-    const d=await r.json();
-    if(!d.length) return null;
-    return {lat:parseFloat(d[0].lat),lon:parseFloat(d[0].lon)};
-  }
-
-  async function getOSRMDistance(o,d) {
-    const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${o.lon},${o.lat};${d.lon},${d.lat}?overview=false`);
-    const data=await r.json();
-    if(data.code!=='Ok'||!data.routes.length) throw new Error('Could not calculate driving route.');
-    return data.routes[0].distance;
-  }
-
-  function showCalcError(msg) { $('calc-error').textContent=msg; $('calc-error').style.display='block'; $('calc-loading').style.display='none'; $('calc-result').style.display='none'; }
-
-  function applyFee() {
-    if(!suggestedFee) return;
-    $('deliveryFee').value=suggestedFee.toFixed(2);
-    update();
-    const el=$('deliveryFee');
-    el.style.borderColor='#e8b84b';
-    setTimeout(()=>{ el.style.borderColor=''; },1200);
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    $('contractDate').value=new Date().toISOString().split('T')[0];
-    document.querySelectorAll('input,select,textarea').forEach(el=>{
-      el.addEventListener('input',update);
-      el.addEventListener('change',update);
-    });
-    update();
-  });
+window.addEventListener('DOMContentLoaded',()=>{
+$('contractDate').value=new Date().toISOString().split('T')[0];
+document.querySelectorAll('input,select,textarea').forEach(el=>{el.addEventListener('input',update);el.addEventListener('change',update);});
+update();
+});
 </script>
 </body>
-</html>
+                                        </html>
